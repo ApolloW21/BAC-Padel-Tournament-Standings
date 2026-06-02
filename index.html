@@ -71,43 +71,28 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        .points { font-weight: bold; }
+        .points {
+            font-weight: bold;
+        }
 
-        .diff { font-weight: bold; }
+        .diff {
+            font-weight: bold;
+        }
 
         .positive { color: #16a34a; }
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION SECTION LAYOUT */
-        .elim-section {
-            display: flex;
-            gap: 15px;
+        /* ELIMINATION ZONE */
+        .zone-title {
             margin-top: 25px;
-            align-items: stretch;
-        }
-
-        .elim-label {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
             background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 15px 10px;
-            font-weight: bold;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 60px;
-        }
-
-        .elim-rows {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex: 1;
         }
 
         .elim {
@@ -124,7 +109,7 @@
 
     <div id="leaderboard" class="leaderboard"></div>
 
-    <div id="elim-container"></div>
+    <div id="elim-zone"></div>
 </div>
 
 <script>
@@ -150,6 +135,7 @@ fetch(csvUrl)
     });
 
     const container = document.getElementById("leaderboard");
+    const elimZone = document.getElementById("elim-zone");
 
     // HEADER
     const headerRow = document.createElement("div");
@@ -240,7 +226,7 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
-    // Split
+    // Split into main + elimination zone
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
@@ -248,28 +234,17 @@ fetch(csvUrl)
 
     mainRows.forEach(r => container.appendChild(r));
 
-    // ELIMINATION SECTION
-    const elimContainer = document.getElementById("elim-container");
+    // Zone title
+    const zoneTitle = document.createElement("div");
+    zoneTitle.className = "zone-title";
+    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+    elimZone.appendChild(zoneTitle);
 
-    const section = document.createElement("div");
-    section.className = "elim-section";
-
-    const label = document.createElement("div");
-    label.className = "elim-label";
-    label.textContent = "STAGE 1 ELIMINATION ZONE";
-
-    const rowsDiv = document.createElement("div");
-    rowsDiv.className = "elim-rows";
-
+    // Elimination rows
     elimRows.forEach(r => {
         r.classList.add("elim");
-        rowsDiv.appendChild(r);
+        elimZone.appendChild(r);
     });
-
-    section.appendChild(label);
-    section.appendChild(rowsDiv);
-
-    elimContainer.appendChild(section);
 
 });
 
