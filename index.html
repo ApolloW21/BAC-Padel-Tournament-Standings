@@ -40,12 +40,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
             align-items: center;
-            transition: transform 0.15s ease;
-        }
-
-        .row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            position: relative;
         }
 
         .header {
@@ -54,9 +49,20 @@
             font-weight: bold;
         }
 
-        .top1 { border-left: 6px solid gold; }
-        .top2 { border-left: 6px solid silver; }
-        .top3 { border-left: 6px solid #cd7f32; }
+        /* FIXED ACCENT (no layout shift) */
+        .row.accent::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .gold::before { background: gold; }
+        .silver::before { background: silver; }
+        .bronze::before { background: #cd7f32; }
     </style>
 </head>
 
@@ -64,7 +70,6 @@
 
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
-
     <div id="leaderboard" class="leaderboard"></div>
 </div>
 
@@ -74,7 +79,7 @@ const csvUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
 
 fetch(csvUrl)
-.then(response => response.text())
+.then(res => res.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
@@ -82,11 +87,10 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT: Points (col 3) then Game Diff (col 4)
+    // SORT: Points then Game Diff
     bodyRows.sort((a, b) => {
-        const pointsDiff = Number(b[3]) - Number(a[3]);
-        if (pointsDiff !== 0) return pointsDiff;
-
+        const p = Number(b[3]) - Number(a[3]);
+        if (p !== 0) return p;
         return Number(b[4]) - Number(a[4]);
     });
 
@@ -104,37 +108,41 @@ fetch(csvUrl)
 
     container.appendChild(headerRow);
 
-    // RANKING LOGIC
+    // RANKING WITH PROPER TIE HANDLING
     let place = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
 
         const row = bodyRows[i];
-
         const prev = bodyRows[i - 1];
 
-        let displayPlace = place;
+        let sameAsPrev = false;
 
         if (i > 0) {
-            const samePoints = Number(row[3]) === Number(prev[3]);
-            const sameDiff = Number(row[4]) === Number(prev[4]);
+            sameAsPrev =
+                Number(row[3]) === Number(prev[3]) &&
+                Number(row[4]) === Number(prev[4]);
+        }
 
-            if (samePoints && sameDiff) {
-                displayPlace = "=" + place;
-            } else {
-                place = i + 1;
-                displayPlace = place;
-            }
+        let displayPlace;
+
+        if (i === 0) {
+            displayPlace = "1";
+        } else if (sameAsPrev) {
+            displayPlace = "=" + place;
+        } else {
+            place = i + 1;
+            displayPlace = String(place);
         }
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        if (i === 0) rowDiv.classList.add("top1");
-        if (i === 1) rowDiv.classList.add("top2");
-        if (i === 2) rowDiv.classList.add("top3");
+        // TOP 3 ACCENT (no layout shift)
+        if (i === 0) rowDiv.classList.add("accent", "gold");
+        if (i === 1) rowDiv.classList.add("accent", "silver");
+        if (i === 2) rowDiv.classList.add("accent", "bronze");
 
-        // Build full row: Place + rest of columns
         const fullRow = [displayPlace, ...row.slice(1)];
 
         fullRow.forEach(cell => {
