@@ -114,8 +114,10 @@
 
 <script>
 
-const csvUrl =
+const baseUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
+
+const csvUrl = baseUrl + "&_=" + new Date().getTime();
 
 fetch(csvUrl)
 .then(response => response.text())
