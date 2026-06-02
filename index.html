@@ -25,18 +25,16 @@
             font-size: 32px;
         }
 
-        .leaderboard {
+        /* BOTH ZONES USE SAME SPACING SYSTEM */
+        .leaderboard,
+        .elim-zone {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        /* spacing wrapper so BOTH zones behave consistently */
         .section {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .row {
@@ -91,9 +89,9 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION ZONE */
+        /* ELIMINATION ZONE TITLE */
         .zone-title {
-            margin-top: 25px;
+            margin-top: 10px;
             padding: 12px;
             text-align: center;
             font-weight: bold;
@@ -103,10 +101,11 @@
             border: 1px solid #fecaca;
         }
 
+        .elim .row,
         .elim {
-            opacity: 0.85;
-            background: #fff5f5;
+            opacity: 0.9;
         }
+
     </style>
 </head>
 
@@ -115,9 +114,11 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <div id="leaderboard"></div>
+    <!-- MAIN LEADERBOARD -->
+    <div class="section leaderboard" id="main-board"></div>
 
-    <div id="elim-zone"></div>
+    <!-- ELIMINATION ZONE -->
+    <div class="section elim-zone" id="elim-zone"></div>
 </div>
 
 <script>
@@ -142,10 +143,10 @@ fetch(csvUrl)
         return Number(b[4]) - Number(a[4]);
     });
 
-    const mainContainer = document.getElementById("leaderboard");
-    const elimContainer = document.getElementById("elim-zone");
+    const mainBoard = document.getElementById("main-board");
+    const elimZone = document.getElementById("elim-zone");
 
-    // HEADER
+    // HEADER (ONLY ON MAIN BOARD)
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
@@ -155,7 +156,7 @@ fetch(csvUrl)
         headerRow.appendChild(div);
     });
 
-    mainContainer.appendChild(headerRow);
+    mainBoard.appendChild(headerRow);
 
     let displayRank = 1;
     let renderedRows = [];
@@ -234,23 +235,23 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
+    // SPLIT
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
     const elimRows = renderedRows.slice(-elimCount);
 
-    mainRows.forEach(r => mainContainer.appendChild(r));
+    // MAIN BOARD
+    mainRows.forEach(r => mainBoard.appendChild(r));
 
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+    // ELIMINATION TITLE
+    const title = document.createElement("div");
+    title.className = "zone-title";
+    title.textContent = "🔻 Stage 1 Elimination Zone";
+    elimZone.appendChild(title);
 
-    elimContainer.appendChild(zoneTitle);
-
-    elimRows.forEach(r => {
-        r.classList.add("elim");
-        elimContainer.appendChild(r);
-    });
+    // ELIMINATION ROWS
+    elimRows.forEach(r => elimZone.appendChild(r));
 
 });
 
