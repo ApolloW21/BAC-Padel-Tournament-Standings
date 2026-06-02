@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Leaderboard</title>
+    <title>BAC Padel Tournament Standings</title>
 
     <style>
         body {
@@ -54,28 +54,16 @@
             font-weight: bold;
         }
 
-        .rank {
-            font-weight: bold;
-        }
-
-        .top1 {
-            border-left: 6px solid gold;
-        }
-
-        .top2 {
-            border-left: 6px solid silver;
-        }
-
-        .top3 {
-            border-left: 6px solid #cd7f32;
-        }
+        .top1 { border-left: 6px solid gold; }
+        .top2 { border-left: 6px solid silver; }
+        .top3 { border-left: 6px solid #cd7f32; }
     </style>
 </head>
 
 <body>
 
 <div class="container">
-    <h1>🏆 Leaderboard</h1>
+    <h1>🏆 BAC Padel Tournament Standings</h1>
 
     <div id="leaderboard" class="leaderboard"></div>
 </div>
@@ -92,7 +80,16 @@ fetch(csvUrl)
     const rows = data.trim().split("\n").map(r => r.split(","));
 
     const headers = rows[0];
-    const bodyRows = rows.slice(1);
+    let bodyRows = rows.slice(1);
+
+    // SORTING RULE:
+    // Column 4 (index 3) desc, then Column 5 (index 4) desc
+    bodyRows.sort((a, b) => {
+        const col4Diff = Number(b[3]) - Number(a[3]);
+        if (col4Diff !== 0) return col4Diff;
+
+        return Number(b[4]) - Number(a[4]);
+    });
 
     const container = document.getElementById("leaderboard");
 
@@ -114,21 +111,13 @@ fetch(csvUrl)
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        // Top 3 styling
         if (index === 0) rowDiv.classList.add("top1");
         if (index === 1) rowDiv.classList.add("top2");
         if (index === 2) rowDiv.classList.add("top3");
 
-        row.forEach((cell, i) => {
+        row.forEach(cell => {
             const div = document.createElement("div");
-
-            // Add rank automatically if first column
-            if (i === 0) {
-                div.innerHTML = `#${index + 1} ${cell}`;
-            } else {
-                div.textContent = cell;
-            }
-
+            div.textContent = cell;
             rowDiv.appendChild(div);
         });
 
