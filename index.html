@@ -182,6 +182,40 @@ const baseUrl =
 
 const csvUrl = baseUrl + "&_=" + Date.now();
 
+function animateValue(element, target, isDiff = false) {
+
+    const duration = 800;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+
+        let current = Math.round(target * progress);
+
+        if (isDiff) {
+
+            if (current > 0) {
+                element.textContent = "+" + current;
+            }
+            else {
+                element.textContent = current;
+            }
+
+        }
+        else {
+            element.textContent = current;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+
+    }
+
+    requestAnimationFrame(update);
+}
+
 function animateWaterfall() {
 
     const items = document.querySelectorAll(".row, .zone-title");
@@ -189,7 +223,20 @@ function animateWaterfall() {
     items.forEach((item, index) => {
 
         setTimeout(() => {
+
             item.classList.add("animate-in");
+
+            const animatedCells = item.querySelectorAll("[data-target]");
+
+            animatedCells.forEach(cell => {
+
+                const target = Number(cell.dataset.target);
+                const isDiff = cell.dataset.diff === "true";
+
+                animateValue(cell, target, isDiff);
+
+            });
+
         }, index * 120);
 
     });
@@ -233,9 +280,6 @@ fetch(csvUrl, { cache: "no-store" })
 
     main.appendChild(headerRow);
 
-    setTimeout(() => {
-        headerRow.classList.add("visible");
-    }, 0);
 
     const renderedRows = [];
 
@@ -283,60 +327,64 @@ fetch(csvUrl, { cache: "no-store" })
         const displayRow = [rankLabel, ...row.slice(1)];
 
         displayRow.forEach((cell, columnIndex) => {
-
+        
             const div = document.createElement("div");
-
-            if (columnIndex === 3) {
-
-                div.classList.add("points");
-                div.textContent = cell;
-
+        
+            // Matches Played
+            if (columnIndex === 2) {
+        
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
+        
             }
-
+        
+            // Points
+            else if (columnIndex === 3) {
+        
+                div.classList.add("points");
+        
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
+        
+            }
+        
+            // Game Differential
             else if (columnIndex === 4) {
-
+        
                 div.classList.add("diff");
-
+        
                 const value = Number(cell);
-
+        
                 if (value > 0) {
-
                     div.classList.add("positive");
-                    div.textContent = "+" + value;
-
                 }
                 else if (value < 0) {
-
                     div.classList.add("negative");
-                    div.textContent = value;
-
                 }
                 else {
-
                     div.classList.add("neutral");
-                    div.textContent = "0";
-
                 }
-
+        
+                div.dataset.target = value;
+                div.dataset.diff = "true";
+                div.textContent = "0";
+        
             }
-
+        
+            // Place + Player
             else {
-
+        
                 div.textContent = cell;
-
+        
             }
-
+        
             rowDiv.appendChild(div);
-
+        
         });
 
         renderedRows.push(rowDiv);
 
-        const animationDelay = (i + 1) * 80;
 
-        setTimeout(() => {
-            rowDiv.classList.add("visible");
-        }, animationDelay);
 
     }
 
