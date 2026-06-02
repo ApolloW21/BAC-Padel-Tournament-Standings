@@ -16,7 +16,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1400px;
         }
 
         h1 {
@@ -24,6 +24,55 @@
             margin-bottom: 30px;
             font-size: 32px;
         }
+
+        /* DASHBOARD LAYOUT */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* PANELS */
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .panel h2 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        /* MATCH CARDS */
+        .match {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .match strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .muted {
+            color: #6b7280;
+        }
+
+        /* ===== STANDINGS (YOUR EXISTING SYSTEM) ===== */
 
         .leaderboard {
             display: flex;
@@ -45,10 +94,6 @@
 
             opacity: 0;
             transform: translateY(20px);
-
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease;
         }
 
         .row.visible {
@@ -56,20 +101,8 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
@@ -90,37 +123,16 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .top1::before {
-            background: gold;
-        }
+        .top1::before { background: gold; }
+        .top2::before { background: silver; }
+        .top3::before { background: #cd7f32; }
 
-        .top2::before {
-            background: silver;
-        }
+        .points { font-weight: bold; }
+        .diff { font-weight: bold; }
 
-        .top3::before {
-            background: #cd7f32;
-        }
-
-        .points {
-            font-weight: bold;
-        }
-
-        .diff {
-            font-weight: bold;
-        }
-
-        .positive {
-            color: #16a34a;
-        }
-
-        .negative {
-            color: #dc2626;
-        }
-
-        .neutral {
-            color: #111827;
-        }
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #111827; }
 
         .zone-title {
             margin-top: 10px;
@@ -137,29 +149,7 @@
             opacity: 0.85;
             background: #fff5f5;
         }
-        /* WATERFALL ANIMATION */
-        
-        .row,
-        .zone-title {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        
-        .animate-in {
-            animation: cardAppear 0.6s ease forwards;
-        }
-        
-        @keyframes cardAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+
     </style>
 </head>
 
@@ -167,12 +157,31 @@
 
 <div class="container">
 
-    <h1>🏆 BAC Padel Tournament Standings</h1>
+    <h1>🏆 BAC Padel Tournament Dashboard</h1>
 
-    <div id="main" class="leaderboard"></div>
+    <div class="dashboard">
 
-    <div id="elim-zone" class="leaderboard"></div>
+        <!-- LEFT: RECENT MATCHES -->
+        <div class="panel">
+            <h2>📊 Recent Matches</h2>
+            <div id="recent"></div>
+        </div>
 
+        <!-- CENTER: STANDINGS -->
+        <div>
+
+            <div id="main" class="leaderboard"></div>
+            <div id="elim-zone" class="leaderboard"></div>
+
+        </div>
+
+        <!-- RIGHT: UPCOMING -->
+        <div class="panel">
+            <h2>📅 Upcoming Matches</h2>
+            <div id="upcoming"></div>
+        </div>
+
+    </div>
 </div>
 
 <script>
@@ -182,39 +191,66 @@ const baseUrl =
 
 const csvUrl = baseUrl + "&_=" + Date.now();
 
-function animateValue(element, target, isDiff = false) {
+/* =========================
+   RECENT MATCHES
+========================= */
 
-    const duration = 800;
-    const startTime = performance.now();
+function renderRecent(rows) {
 
-    function update(currentTime) {
+    const container = document.getElementById("recent");
 
-        const progress = Math.min((currentTime - startTime) / duration, 1);
+    rows.slice(1).forEach(r => {
 
-        let current = Math.round(target * progress);
+        const div = document.createElement("div");
+        div.className = "match";
 
-        if (isDiff) {
+        const p1 = `${r[1]} & ${r[2]}`;
+        const p2 = `${r[4]} & ${r[5]}`;
 
-            if (current > 0) {
-                element.textContent = "+" + current;
-            }
-            else {
-                element.textContent = current;
-            }
+        const score =
+            `${r[9] || "-"}-${r[10] || "-"} | ` +
+            `${r[11] || "-"}-${r[12] || "-"} | ` +
+            `${r[13] || "-"}-${r[14] || "-"}`;
 
-        }
-        else {
-            element.textContent = current;
-        }
+        div.innerHTML = `
+            <strong>${p1} <span class="muted">vs</span> ${p2}</strong>
+            <div class="score">${score}</div>
+            <div class="muted">${r[6]} ${r[7]}</div>
+        `;
 
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-
-    }
-
-    requestAnimationFrame(update);
+        container.appendChild(div);
+    });
 }
+
+/* =========================
+   UPCOMING MATCHES
+========================= */
+
+function renderUpcoming(rows) {
+
+    const container = document.getElementById("upcoming");
+
+    rows.slice(1).forEach(r => {
+
+        const div = document.createElement("div");
+        div.className = "match";
+
+        const p1 = `${r[1]} & ${r[2]}`;
+        const p2 = `${r[4]} & ${r[5]}`;
+
+        div.innerHTML = `
+            <strong>${p1} <span class="muted">vs</span> ${p2}</strong>
+            <div class="muted">Week ${r[0]}</div>
+            <div class="muted">${r[6]} ${r[7]} - ${r[8]}</div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+/* =========================
+   STANDINGS (YOUR SYSTEM)
+   ========================= */
 
 function animateWaterfall() {
 
@@ -223,45 +259,32 @@ function animateWaterfall() {
     items.forEach((item, index) => {
 
         setTimeout(() => {
-
             item.classList.add("animate-in");
-
-            const animatedCells = item.querySelectorAll("[data-target]");
-
-            animatedCells.forEach(cell => {
-
-                const target = Number(cell.dataset.target);
-                const isDiff = cell.dataset.diff === "true";
-
-                animateValue(cell, target, isDiff);
-
-            });
-
         }, index * 120);
 
     });
-
 }
-    
+
 fetch(csvUrl, { cache: "no-store" })
-.then(response => response.text())
+.then(r => r.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
+
+    renderRecent(rows);
+    renderUpcoming(rows);
+
+    /* ===== STANDINGS LOGIC ===== */
 
     const headers = ["Place", ...rows[0].slice(1)];
     const bodyRows = rows.slice(1);
 
     bodyRows.sort((a, b) => {
 
-        const pointDiff = Number(b[3]) - Number(a[3]);
-
-        if (pointDiff !== 0) {
-            return pointDiff;
-        }
+        const pd = Number(b[3]) - Number(a[3]);
+        if (pd !== 0) return pd;
 
         return Number(b[4]) - Number(a[4]);
-
     });
 
     const main = document.getElementById("main");
@@ -270,19 +293,15 @@ fetch(csvUrl, { cache: "no-store" })
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
-    headers.forEach(header => {
-
-        const div = document.createElement("div");
-        div.textContent = header;
-        headerRow.appendChild(div);
-
+    headers.forEach(h => {
+        const d = document.createElement("div");
+        d.textContent = h;
+        headerRow.appendChild(d);
     });
 
     main.appendChild(headerRow);
 
-
-    const renderedRows = [];
-
+    let rendered = [];
     let rank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
@@ -291,31 +310,28 @@ fetch(csvUrl, { cache: "no-store" })
 
         if (i > 0) {
 
-            const previous = bodyRows[i - 1];
+            const prev = bodyRows[i - 1];
 
-            const tied =
-                Number(row[3]) === Number(previous[3]) &&
-                Number(row[4]) === Number(previous[4]);
+            const same =
+                Number(row[3]) === Number(prev[3]) &&
+                Number(row[4]) === Number(prev[4]);
 
-            if (!tied) {
-                rank = i + 1;
-            }
+            if (!same) rank = i + 1;
         }
 
-        const previousTie =
+        const tiedPrev =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
 
-        const nextTie =
-            i < bodyRows.length - 1 &&
-            Number(row[3]) === Number(bodyRows[i + 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i + 1][4]);
+        const next = bodyRows[i + 1];
 
-        const rankLabel =
-            (previousTie || nextTie)
-                ? "=" + rank
-                : rank;
+        const tiedNext =
+            next &&
+            Number(row[3]) === Number(next[3]) &&
+            Number(row[4]) === Number(next[4]);
+
+        const label = (tiedPrev || tiedNext) ? "=" + rank : rank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
@@ -324,95 +340,66 @@ fetch(csvUrl, { cache: "no-store" })
         if (rank === 2) rowDiv.classList.add("top2");
         if (rank === 3) rowDiv.classList.add("top3");
 
-        const displayRow = [rankLabel, ...row.slice(1)];
+        const full = [label, ...row.slice(1)];
 
-        displayRow.forEach((cell, columnIndex) => {
-        
-            const div = document.createElement("div");
-        
-            // Matches Played
-            if (columnIndex === 2) {
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
+        full.forEach((cell, i) => {
+
+            const d = document.createElement("div");
+
+            if (i === 3) {
+                d.classList.add("points");
+                d.textContent = cell;
             }
-        
-            // Points
-            else if (columnIndex === 3) {
-        
-                div.classList.add("points");
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
-            }
-        
-            // Game Differential
-            else if (columnIndex === 4) {
-        
-                div.classList.add("diff");
-        
-                const value = Number(cell);
-        
-                if (value > 0) {
-                    div.classList.add("positive");
+
+            else if (i === 4) {
+                d.classList.add("diff");
+
+                const v = Number(cell);
+
+                if (v > 0) {
+                    d.classList.add("positive");
+                    d.textContent = "+" + v;
                 }
-                else if (value < 0) {
-                    div.classList.add("negative");
+                else if (v < 0) {
+                    d.classList.add("negative");
+                    d.textContent = v;
                 }
                 else {
-                    div.classList.add("neutral");
+                    d.classList.add("neutral");
+                    d.textContent = "0";
                 }
-        
-                div.dataset.target = value;
-                div.dataset.diff = "true";
-                div.textContent = "0";
-        
             }
-        
-            // Place + Player
+
             else {
-        
-                div.textContent = cell;
-        
+                d.textContent = cell;
             }
-        
-            rowDiv.appendChild(div);
-        
+
+            rowDiv.appendChild(d);
         });
 
-        renderedRows.push(rowDiv);
-
-
+        rendered.push(rowDiv);
 
     }
 
     const elimCount = 3;
 
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
+    rendered.slice(0, -elimCount).forEach(r => main.appendChild(r));
 
-    mainRows.forEach(row => {
-        main.appendChild(row);
-    });
+    const zone = document.createElement("div");
+    zone.className = "zone-title";
+    zone.textContent = "🔻 Stage 1 Elimination Zone";
 
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+    elimZone.appendChild(zone);
 
-    elimZone.appendChild(zoneTitle);
-
-    elimRows.forEach(row => {
-
-        row.classList.add("elim");
-        elimZone.appendChild(row);
-
+    rendered.slice(-elimCount).forEach(r => {
+        r.classList.add("elim");
+        elimZone.appendChild(r);
     });
 
     animateWaterfall();
 
 });
+
 </script>
 
 </body>
