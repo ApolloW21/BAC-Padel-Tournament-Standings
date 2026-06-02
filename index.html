@@ -25,15 +25,11 @@
             font-size: 32px;
         }
 
-        /* SHARED STACK STYLE (IMPORTANT FIX) */
-        .leaderboard,
-        #elim-zone {
+        /* USED FOR BOTH SECTIONS NOW */
+        .leaderboard {
             display: flex;
             flex-direction: column;
             gap: 12px;
-        }
-
-        .leaderboard {
             margin-bottom: 20px;
         }
 
@@ -89,10 +85,9 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION ZONE HEADER */
+        /* ELIMINATION ZONE */
         .zone-title {
-            margin-top: 25px;      /* space above zone */
-            margin-bottom: 12px;   /* matches row gap */
+            margin-top: 10px;
             padding: 12px;
             text-align: center;
             font-weight: bold;
@@ -114,9 +109,11 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <div id="leaderboard" class="leaderboard"></div>
+    <!-- MAIN TABLE -->
+    <div id="main" class="leaderboard"></div>
 
-    <div id="elim-zone"></div>
+    <!-- ELIMINATION ZONE -->
+    <div id="elim-zone" class="leaderboard"></div>
 </div>
 
 <script>
@@ -133,7 +130,7 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT: Points then Diff
+    // SORT
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
@@ -141,10 +138,10 @@ fetch(csvUrl)
         return Number(b[4]) - Number(a[4]);
     });
 
-    const container = document.getElementById("leaderboard");
+    const main = document.getElementById("main");
     const elimZone = document.getElementById("elim-zone");
 
-    // HEADER
+    // HEADER (only in main)
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
@@ -154,7 +151,7 @@ fetch(csvUrl)
         headerRow.appendChild(div);
     });
 
-    container.appendChild(headerRow);
+    main.appendChild(headerRow);
 
     let displayRank = 1;
     let renderedRows = [];
@@ -233,19 +230,22 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
-    // SPLIT
+    // Split
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
     const elimRows = renderedRows.slice(-elimCount);
 
-    mainRows.forEach(r => container.appendChild(r));
+    // Render main
+    mainRows.forEach(r => main.appendChild(r));
 
+    // Zone title
     const zoneTitle = document.createElement("div");
     zoneTitle.className = "zone-title";
     zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
     elimZone.appendChild(zoneTitle);
 
+    // Render elimination rows (same spacing system now)
     elimRows.forEach(r => {
         r.classList.add("elim");
         elimZone.appendChild(r);
