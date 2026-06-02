@@ -25,10 +25,12 @@
             font-size: 32px;
         }
 
-        .leaderboard {
+        /* BOTH SECTIONS NOW USE SAME SPACING SYSTEM */
+        .leaderboard,
+        .elim-container {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* THIS controls spacing for everything */
+            gap: 12px;
         }
 
         .row {
@@ -83,16 +85,21 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* Elimination styling */
+        /* ELIMINATION ZONE TITLE */
+        .zone-title {
+            margin-top: 25px;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
         .elim {
             opacity: 0.85;
             background: #fff5f5;
-        }
-
-        .elim-title {
-            background: #fee2e2;
-            color: #991b1b;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -102,7 +109,12 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
+    <!-- MAIN LEADERBOARD -->
     <div id="leaderboard" class="leaderboard"></div>
+
+    <!-- ELIMINATION ZONE -->
+    <div class="zone-title">🔻 Stage 1 Elimination Zone</div>
+    <div id="elim-zone" class="elim-container"></div>
 </div>
 
 <script>
@@ -127,7 +139,8 @@ fetch(csvUrl)
         return Number(b[4]) - Number(a[4]);
     });
 
-    const container = document.getElementById("leaderboard");
+    const leaderboard = document.getElementById("leaderboard");
+    const elimZone = document.getElementById("elim-zone");
 
     // HEADER
     const headerRow = document.createElement("div");
@@ -139,7 +152,7 @@ fetch(csvUrl)
         headerRow.appendChild(div);
     });
 
-    container.appendChild(headerRow);
+    leaderboard.appendChild(headerRow);
 
     let displayRank = 1;
     let renderedRows = [];
@@ -218,25 +231,17 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
-    // Split bottom 3
+    // Split top + elimination
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
     const elimRows = renderedRows.slice(-elimCount);
 
-    // Render main table
-    mainRows.forEach(r => container.appendChild(r));
+    mainRows.forEach(r => leaderboard.appendChild(r));
 
-    // Elimination title (keeps spacing because it's a row)
-    const elimTitle = document.createElement("div");
-    elimTitle.className = "row elim-title";
-    elimTitle.innerHTML = "🔻 Stage 1 Elimination Zone";
-    container.appendChild(elimTitle);
-
-    // Elimination rows
     elimRows.forEach(r => {
         r.classList.add("elim");
-        container.appendChild(r);
+        elimZone.appendChild(r);
     });
 
 });
