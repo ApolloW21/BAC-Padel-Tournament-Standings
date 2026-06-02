@@ -187,23 +187,31 @@ function animateValue(element, target, isDiff = false) {
     const duration = 800;
     const startTime = performance.now();
 
+    const isDecimal = !Number.isInteger(target);
+
     function update(currentTime) {
 
         const progress = Math.min((currentTime - startTime) / duration, 1);
 
-        let current = Math.round(target * progress);
+        let current;
+
+        if (isDecimal) {
+            // keep decimals (e.g. 1.5, 2.5)
+            current = (target * progress);
+            current = Math.round(current * 10) / 10; // 1 decimal place
+        } else {
+            current = Math.round(target * progress);
+        }
 
         if (isDiff) {
 
             if (current > 0) {
                 element.textContent = "+" + current;
-            }
-            else {
+            } else {
                 element.textContent = current;
             }
 
-        }
-        else {
+        } else {
             element.textContent = current;
         }
 
