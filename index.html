@@ -71,19 +71,27 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        /* NEW styling */
+        /* Column 4 (Points) */
         .points {
-            font-weight: 800;
-            font-size: 16px;
+            font-weight: bold;
         }
 
+        /* Column 5 (Differential styling) */
         .diff {
-            font-weight: 700;
+            font-weight: bold;
         }
 
-        .pos { color: green; }
-        .neg { color: red; }
-        .zero { color: black; }
+        .positive {
+            color: #16a34a; /* green */
+        }
+
+        .negative {
+            color: #dc2626; /* red */
+        }
+
+        .neutral {
+            color: #111827;
+        }
     </style>
 </head>
 
@@ -109,7 +117,7 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT: Points then Game Diff
+    // SORT: Points then Diff
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
@@ -150,12 +158,12 @@ fetch(csvUrl)
 
         let rankLabel = displayRank;
 
-        const next = bodyRows[i + 1];
-
         const tiedWithPrev =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
+
+        const next = bodyRows[i + 1];
 
         const tiedWithNext =
             next &&
@@ -175,35 +183,33 @@ fetch(csvUrl)
 
         const fullRow = [rankLabel, ...row.slice(1)];
 
-        fullRow.forEach((cell, idx) => {
+        fullRow.forEach((cell, index) => {
 
             const div = document.createElement("div");
 
-            // Column indexes AFTER adding Place:
-            // 0 = Place
-            // 1 = Player
-            // 2 = Matches
-            // 3 = Points
-            // 4 = Game Diff
-
-            if (idx === 3) {
+            // Column 4 (Points)
+            if (index === 3) {
                 div.classList.add("points");
                 div.textContent = cell;
             }
 
-            else if (idx === 4) {
+            // Column 5 (Game Diff)
+            else if (index === 4) {
+
                 div.classList.add("diff");
 
-                const val = Number(cell);
+                let value = Number(cell);
 
-                if (val > 0) {
-                    div.classList.add("pos");
-                    div.textContent = "+" + val;
-                } else if (val < 0) {
-                    div.classList.add("neg");
-                    div.textContent = val;
-                } else {
-                    div.classList.add("zero");
+                if (value > 0) {
+                    div.classList.add("positive");
+                    div.textContent = "+" + value;
+                }
+                else if (value < 0) {
+                    div.classList.add("negative");
+                    div.textContent = value;
+                }
+                else {
+                    div.classList.add("neutral");
                     div.textContent = "0";
                 }
             }
