@@ -2,61 +2,83 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>BAC Padel Tournament Standings</title>
+    <title>Leaderboard</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
         }
-    
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
         h1 {
             text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
         }
-    
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-    
-        /* HEADERS */
-        th {
-            padding: 12px;
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
-            border-bottom: 2px solid #333;
-            background: #f2f2f2;
+            align-items: center;
+            transition: transform 0.15s ease;
         }
-    
-        /* CELLS */
-        td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
+
+        .row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
-    
-        /* REMOVE VERTICAL LINES COMPLETELY */
-        th, td {
-            border-left: none;
-            border-right: none;
+
+        .header {
+            background: #111827;
+            color: white;
+            font-weight: bold;
         }
-    
-        tr:nth-child(even) td {
-            background: #fafafa;
+
+        .rank {
+            font-weight: bold;
+        }
+
+        .top1 {
+            border-left: 6px solid gold;
+        }
+
+        .top2 {
+            border-left: 6px solid silver;
+        }
+
+        .top3 {
+            border-left: 6px solid #cd7f32;
         }
     </style>
 </head>
 
 <body>
 
-<h1>BAC Padel Tournament Standings</h1>
+<div class="container">
+    <h1>🏆 Leaderboard</h1>
 
-<table>
-    <thead id="table-head"></thead>
-    <tbody id="table-body"></tbody>
-</table>
+    <div id="leaderboard" class="leaderboard"></div>
+</div>
 
 <script>
 
@@ -72,31 +94,45 @@ fetch(csvUrl)
     const headers = rows[0];
     const bodyRows = rows.slice(1);
 
-    // Build header
-    const head = document.getElementById("table-head");
-    const headRow = document.createElement("tr");
+    const container = document.getElementById("leaderboard");
+
+    // HEADER
+    const headerRow = document.createElement("div");
+    headerRow.className = "row header";
 
     headers.forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h;
-        headRow.appendChild(th);
+        const div = document.createElement("div");
+        div.textContent = h;
+        headerRow.appendChild(div);
     });
 
-    head.appendChild(headRow);
+    container.appendChild(headerRow);
 
-    // Build body
-    const body = document.getElementById("table-body");
+    // DATA ROWS
+    bodyRows.forEach((row, index) => {
 
-    bodyRows.forEach(row => {
-        const tr = document.createElement("tr");
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "row";
 
-        row.forEach(cell => {
-            const td = document.createElement("td");
-            td.textContent = cell;
-            tr.appendChild(td);
+        // Top 3 styling
+        if (index === 0) rowDiv.classList.add("top1");
+        if (index === 1) rowDiv.classList.add("top2");
+        if (index === 2) rowDiv.classList.add("top3");
+
+        row.forEach((cell, i) => {
+            const div = document.createElement("div");
+
+            // Add rank automatically if first column
+            if (i === 0) {
+                div.innerHTML = `#${index + 1} ${cell}`;
+            } else {
+                div.textContent = cell;
+            }
+
+            rowDiv.appendChild(div);
         });
 
-        body.appendChild(tr);
+        container.appendChild(rowDiv);
     });
 
 });
