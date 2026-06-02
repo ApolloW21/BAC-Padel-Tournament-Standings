@@ -25,17 +25,16 @@
             font-size: 32px;
         }
 
-        .leaderboard {
+        /* SHARED STACK STYLE (IMPORTANT FIX) */
+        .leaderboard,
+        #elim-zone {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .elim-zone {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* ✅ FIX: restores spacing between elimination rows */
-            margin-top: 25px;
+        .leaderboard {
+            margin-bottom: 20px;
         }
 
         .row {
@@ -90,8 +89,10 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
+        /* ELIMINATION ZONE HEADER */
         .zone-title {
-            margin-top: 25px;
+            margin-top: 25px;      /* space above zone */
+            margin-bottom: 12px;   /* matches row gap */
             padding: 12px;
             text-align: center;
             font-weight: bold;
@@ -115,7 +116,7 @@
 
     <div id="leaderboard" class="leaderboard"></div>
 
-    <div id="elim-zone" class="elim-zone"></div>
+    <div id="elim-zone"></div>
 </div>
 
 <script>
@@ -132,7 +133,7 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT
+    // SORT: Points then Diff
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
@@ -240,13 +241,11 @@ fetch(csvUrl)
 
     mainRows.forEach(r => container.appendChild(r));
 
-    // ZONE TITLE (unchanged visually)
     const zoneTitle = document.createElement("div");
     zoneTitle.className = "zone-title";
     zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
     elimZone.appendChild(zoneTitle);
 
-    // ELIM ROWS (now spaced correctly)
     elimRows.forEach(r => {
         r.classList.add("elim");
         elimZone.appendChild(r);
