@@ -25,7 +25,6 @@
             font-size: 32px;
         }
 
-        /* USED FOR BOTH SECTIONS NOW */
         .leaderboard {
             display: flex;
             flex-direction: column;
@@ -57,6 +56,7 @@
             font-weight: bold;
         }
 
+        /* TOP 3 MEDALS (FIXED) */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -85,7 +85,6 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION ZONE */
         .zone-title {
             margin-top: 10px;
             padding: 12px;
@@ -109,10 +108,7 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <!-- MAIN TABLE -->
     <div id="main" class="leaderboard"></div>
-
-    <!-- ELIMINATION ZONE -->
     <div id="elim-zone" class="leaderboard"></div>
 </div>
 
@@ -141,7 +137,7 @@ fetch(csvUrl)
     const main = document.getElementById("main");
     const elimZone = document.getElementById("elim-zone");
 
-    // HEADER (only in main)
+    // HEADER
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
@@ -153,8 +149,10 @@ fetch(csvUrl)
 
     main.appendChild(headerRow);
 
-    let displayRank = 1;
-    let renderedRows = [];
+    let rendered = [];
+
+    // ---- RANK CALCULATION (FIXED) ----
+    let rank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
 
@@ -163,34 +161,36 @@ fetch(csvUrl)
         if (i > 0) {
             const prev = bodyRows[i - 1];
 
-            const samePoints = Number(row[3]) === Number(prev[3]);
-            const sameDiff = Number(row[4]) === Number(prev[4]);
+            const same =
+                Number(row[3]) === Number(prev[3]) &&
+                Number(row[4]) === Number(prev[4]);
 
-            if (!(samePoints && sameDiff)) {
-                displayRank = i + 1;
+            if (!same) {
+                rank = i + 1;
             }
         }
 
-        let rankLabel = displayRank;
-
-        const tiedWithPrev =
+        const tiedPrev =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
 
         const next = bodyRows[i + 1];
 
-        const tiedWithNext =
+        const tiedNext =
             next &&
             Number(row[3]) === Number(next[3]) &&
             Number(row[4]) === Number(next[4]);
 
-        if (tiedWithPrev || tiedWithNext) {
-            rankLabel = "=" + displayRank;
-        }
+        const rankLabel = (tiedPrev || tiedNext) ? "=" + rank : rank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
+
+        // TOP 3 BASED ON FINAL RANK VALUE
+        if (rank === 1) rowDiv.classList.add("top1");
+        if (rank === 2) rowDiv.classList.add("top2");
+        if (rank === 3) rowDiv.classList.add("top3");
 
         const fullRow = [rankLabel, ...row.slice(1)];
 
@@ -227,25 +227,22 @@ fetch(csvUrl)
             rowDiv.appendChild(div);
         });
 
-        renderedRows.push(rowDiv);
+        rendered.push(rowDiv);
     }
 
-    // Split
+    // SPLIT INTO ZONES
     const elimCount = 3;
 
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
+    const mainRows = rendered.slice(0, -elimCount);
+    const elimRows = rendered.slice(-elimCount);
 
-    // Render main
     mainRows.forEach(r => main.appendChild(r));
 
-    // Zone title
     const zoneTitle = document.createElement("div");
     zoneTitle.className = "zone-title";
     zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
     elimZone.appendChild(zoneTitle);
 
-    // Render elimination rows (same spacing system now)
     elimRows.forEach(r => {
         r.classList.add("elim");
         elimZone.appendChild(r);
