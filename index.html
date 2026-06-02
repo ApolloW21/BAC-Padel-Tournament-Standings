@@ -55,7 +55,6 @@
             font-weight: bold;
         }
 
-        /* medal bar */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -72,28 +71,16 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        /* 🔥 Column 4 (Points) emphasis */
+        /* NEW: highlight column 4 (Points) */
         .points {
             font-weight: 700;
             font-size: 1.05em;
-            color: #111827;
         }
 
-        /* Game differential colours */
-        .positive {
-            color: #16a34a; /* green */
-            font-weight: 600;
-        }
-
-        .negative {
-            color: #dc2626; /* red */
-            font-weight: 600;
-        }
-
-        .zero {
-            color: #111827;
-            font-weight: 500;
-        }
+        /* Column 5 styling */
+        .pos { color: #16a34a; }   /* green */
+        .neg { color: #dc2626; }   /* red */
+        .zero { color: #111827; }  /* black */
     </style>
 </head>
 
@@ -119,7 +106,7 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT
+    // SORT: Points then Game Diff
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
@@ -161,16 +148,21 @@ fetch(csvUrl)
 
         let rankLabel = displayRank;
 
-        const tied =
-            (i > 0 &&
-                Number(row[3]) === Number(bodyRows[i - 1][3]) &&
-                Number(row[4]) === Number(bodyRows[i - 1][4]))
-            ||
-            (i < bodyRows.length - 1 &&
-                Number(row[3]) === Number(bodyRows[i + 1][3]) &&
-                Number(row[4]) === Number(bodyRows[i + 1][4]));
+        const next = bodyRows[i + 1];
 
-        if (tied) rankLabel = "=" + displayRank;
+        const tiedWithPrev =
+            i > 0 &&
+            Number(row[3]) === Number(bodyRows[i - 1][3]) &&
+            Number(row[4]) === Number(bodyRows[i - 1][4]);
+
+        const tiedWithNext =
+            next &&
+            Number(row[3]) === Number(next[3]) &&
+            Number(row[4]) === Number(next[4]);
+
+        if (tiedWithPrev || tiedWithNext) {
+            rankLabel = "=" + displayRank;
+        }
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
@@ -184,22 +176,21 @@ fetch(csvUrl)
         fullRow.forEach((cell, index) => {
             const div = document.createElement("div");
 
-            div.textContent = cell;
-
-            // COLUMN 4 (Points) -> index 3 after adding Place
+            // Column 4 (Points) styling (index 3 after Place added)
             if (index === 3) {
                 div.classList.add("points");
             }
 
-            // COLUMN 5 (Game Diff) -> index 4
+            // Column 5 (Game Differential) styling
             if (index === 4) {
-                const value = Number(cell);
+                const num = Number(cell);
 
-                if (value > 0) div.classList.add("positive");
-                else if (value < 0) div.classList.add("negative");
+                if (num > 0) div.classList.add("pos");
+                else if (num < 0) div.classList.add("neg");
                 else div.classList.add("zero");
             }
 
+            div.textContent = cell;
             rowDiv.appendChild(div);
         });
 
