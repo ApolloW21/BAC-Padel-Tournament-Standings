@@ -40,7 +40,13 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
             align-items: center;
+            transition: transform 0.15s ease;
             position: relative;
+        }
+
+        .row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
         .header {
@@ -49,8 +55,10 @@
             font-weight: bold;
         }
 
-        /* FIXED ACCENT (no layout shift) */
-        .row.accent::before {
+        /* FIX: medal indicator without shifting layout */
+        .top1::before,
+        .top2::before,
+        .top3::before {
             content: "";
             position: absolute;
             left: 0;
@@ -60,9 +68,9 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .gold::before { background: gold; }
-        .silver::before { background: silver; }
-        .bronze::before { background: #cd7f32; }
+        .top1::before { background: gold; }
+        .top2::before { background: silver; }
+        .top3::before { background: #cd7f32; }
     </style>
 </head>
 
@@ -70,6 +78,7 @@
 
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
+
     <div id="leaderboard" class="leaderboard"></div>
 </div>
 
@@ -79,7 +88,7 @@ const csvUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
 
 fetch(csvUrl)
-.then(res => res.text())
+.then(response => response.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
@@ -89,8 +98,9 @@ fetch(csvUrl)
 
     // SORT: Points then Game Diff
     bodyRows.sort((a, b) => {
-        const p = Number(b[3]) - Number(a[3]);
-        if (p !== 0) return p;
+        const pointsDiff = Number(b[3]) - Number(a[3]);
+        if (pointsDiff !== 0) return pointsDiff;
+
         return Number(b[4]) - Number(a[4]);
     });
 
@@ -109,41 +119,50 @@ fetch(csvUrl)
     container.appendChild(headerRow);
 
     // RANKING WITH PROPER TIE HANDLING
-    let place = 1;
+    let displayRank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
 
         const row = bodyRows[i];
-        const prev = bodyRows[i - 1];
-
-        let sameAsPrev = false;
 
         if (i > 0) {
-            sameAsPrev =
-                Number(row[3]) === Number(prev[3]) &&
-                Number(row[4]) === Number(prev[4]);
+            const prev = bodyRows[i - 1];
+
+            const samePoints = Number(row[3]) === Number(prev[3]);
+            const sameDiff = Number(row[4]) === Number(prev[4]);
+
+            if (!(samePoints && sameDiff)) {
+                displayRank = i + 1;
+            }
         }
 
-        let displayPlace;
+        let rankLabel = displayRank;
 
-        if (i === 0) {
-            displayPlace = "1";
-        } else if (sameAsPrev) {
-            displayPlace = "=" + place;
-        } else {
-            place = i + 1;
-            displayPlace = String(place);
+        // If tied with previous OR next, mark as "="
+        const next = bodyRows[i + 1];
+
+        const tiedWithPrev =
+            i > 0 &&
+            Number(row[3]) === Number(bodyRows[i - 1][3]) &&
+            Number(row[4]) === Number(bodyRows[i - 1][4]);
+
+        const tiedWithNext =
+            next &&
+            Number(row[3]) === Number(next[3]) &&
+            Number(row[4]) === Number(next[4]);
+
+        if (tiedWithPrev || tiedWithNext) {
+            rankLabel = "=" + displayRank;
         }
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        // TOP 3 ACCENT (no layout shift)
-        if (i === 0) rowDiv.classList.add("accent", "gold");
-        if (i === 1) rowDiv.classList.add("accent", "silver");
-        if (i === 2) rowDiv.classList.add("accent", "bronze");
+        if (i === 0) rowDiv.classList.add("top1");
+        if (i === 1) rowDiv.classList.add("top2");
+        if (i === 2) rowDiv.classList.add("top3");
 
-        const fullRow = [displayPlace, ...row.slice(1)];
+        const fullRow = [rankLabel, ...row.slice(1)];
 
         fullRow.forEach(cell => {
             const div = document.createElement("div");
