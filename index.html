@@ -41,8 +41,30 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
             align-items: center;
-            transition: transform 0.15s ease;
             position: relative;
+
+            opacity: 0;
+            transform: translateY(20px);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .row.visible {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .row:hover {
@@ -56,7 +78,6 @@
             font-weight: bold;
         }
 
-        /* TOP 3 MEDALS */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -69,9 +90,17 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .top1::before { background: gold; }
-        .top2::before { background: silver; }
-        .top3::before { background: #cd7f32; }
+        .top1::before {
+            background: gold;
+        }
+
+        .top2::before {
+            background: silver;
+        }
+
+        .top3::before {
+            background: #cd7f32;
+        }
 
         .points {
             font-weight: bold;
@@ -81,9 +110,17 @@
             font-weight: bold;
         }
 
-        .positive { color: #16a34a; }
-        .negative { color: #dc2626; }
-        .neutral { color: #111827; }
+        .positive {
+            color: #16a34a;
+        }
+
+        .negative {
+            color: #dc2626;
+        }
+
+        .neutral {
+            color: #111827;
+        }
 
         .zone-title {
             margin-top: 10px;
@@ -106,10 +143,13 @@
 <body>
 
 <div class="container">
+
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
     <div id="main" class="leaderboard"></div>
+
     <div id="elim-zone" class="leaderboard"></div>
+
 </div>
 
 <script>
@@ -117,8 +157,7 @@
 const baseUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
 
-// ✅ CACHE FIX: always force fresh request
-const csvUrl = baseUrl + "&_=" + new Date().getTime();
+const csvUrl = baseUrl + "&_=" + Date.now();
 
 fetch(csvUrl, { cache: "no-store" })
 .then(response => response.text())
@@ -127,34 +166,42 @@ fetch(csvUrl, { cache: "no-store" })
     const rows = data.trim().split("\n").map(r => r.split(","));
 
     const headers = ["Place", ...rows[0].slice(1)];
-    let bodyRows = rows.slice(1);
+    const bodyRows = rows.slice(1);
 
-    // SORT: Points then Game Diff
     bodyRows.sort((a, b) => {
-        const pointsDiff = Number(b[3]) - Number(a[3]);
-        if (pointsDiff !== 0) return pointsDiff;
+
+        const pointDiff = Number(b[3]) - Number(a[3]);
+
+        if (pointDiff !== 0) {
+            return pointDiff;
+        }
 
         return Number(b[4]) - Number(a[4]);
+
     });
 
     const main = document.getElementById("main");
     const elimZone = document.getElementById("elim-zone");
 
-    // HEADER
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
-    headers.forEach(h => {
+    headers.forEach(header => {
+
         const div = document.createElement("div");
-        div.textContent = h;
+        div.textContent = header;
         headerRow.appendChild(div);
+
     });
 
     main.appendChild(headerRow);
 
-    let rendered = [];
+    setTimeout(() => {
+        headerRow.classList.add("visible");
+    }, 0);
 
-    // ---- RANKING LOGIC ----
+    const renderedRows = [];
+
     let rank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
@@ -162,99 +209,123 @@ fetch(csvUrl, { cache: "no-store" })
         const row = bodyRows[i];
 
         if (i > 0) {
-            const prev = bodyRows[i - 1];
 
-            const same =
-                Number(row[3]) === Number(prev[3]) &&
-                Number(row[4]) === Number(prev[4]);
+            const previous = bodyRows[i - 1];
 
-            if (!same) {
+            const tied =
+                Number(row[3]) === Number(previous[3]) &&
+                Number(row[4]) === Number(previous[4]);
+
+            if (!tied) {
                 rank = i + 1;
             }
         }
 
-        const tiedPrev =
+        const previousTie =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
 
-        const next = bodyRows[i + 1];
+        const nextTie =
+            i < bodyRows.length - 1 &&
+            Number(row[3]) === Number(bodyRows[i + 1][3]) &&
+            Number(row[4]) === Number(bodyRows[i + 1][4]);
 
-        const tiedNext =
-            next &&
-            Number(row[3]) === Number(next[3]) &&
-            Number(row[4]) === Number(next[4]);
-
-        const rankLabel = (tiedPrev || tiedNext) ? "=" + rank : rank;
+        const rankLabel =
+            (previousTie || nextTie)
+                ? "=" + rank
+                : rank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        // TOP 3 BASED ON RANK
         if (rank === 1) rowDiv.classList.add("top1");
         if (rank === 2) rowDiv.classList.add("top2");
         if (rank === 3) rowDiv.classList.add("top3");
 
-        const fullRow = [rankLabel, ...row.slice(1)];
+        const displayRow = [rankLabel, ...row.slice(1)];
 
-        fullRow.forEach((cell, index) => {
+        displayRow.forEach((cell, columnIndex) => {
 
             const div = document.createElement("div");
 
-            // Column 4 (Points)
-            if (index === 3) {
+            if (columnIndex === 3) {
+
                 div.classList.add("points");
                 div.textContent = cell;
+
             }
 
-            // Column 5 (Game Diff)
-            else if (index === 4) {
+            else if (columnIndex === 4) {
+
                 div.classList.add("diff");
 
-                let value = Number(cell);
+                const value = Number(cell);
 
                 if (value > 0) {
+
                     div.classList.add("positive");
                     div.textContent = "+" + value;
-                } else if (value < 0) {
+
+                }
+                else if (value < 0) {
+
                     div.classList.add("negative");
                     div.textContent = value;
-                } else {
+
+                }
+                else {
+
                     div.classList.add("neutral");
                     div.textContent = "0";
+
                 }
+
             }
 
             else {
+
                 div.textContent = cell;
+
             }
 
             rowDiv.appendChild(div);
+
         });
 
-        rendered.push(rowDiv);
+        renderedRows.push(rowDiv);
+
+        const animationDelay = (i + 1) * 80;
+
+        setTimeout(() => {
+            rowDiv.classList.add("visible");
+        }, animationDelay);
+
     }
 
-    // SPLIT INTO ZONES
     const elimCount = 3;
 
-    const mainRows = rendered.slice(0, -elimCount);
-    const elimRows = rendered.slice(-elimCount);
+    const mainRows = renderedRows.slice(0, -elimCount);
+    const elimRows = renderedRows.slice(-elimCount);
 
-    mainRows.forEach(r => main.appendChild(r));
+    mainRows.forEach(row => {
+        main.appendChild(row);
+    });
 
     const zoneTitle = document.createElement("div");
     zoneTitle.className = "zone-title";
     zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+
     elimZone.appendChild(zoneTitle);
 
-    elimRows.forEach(r => {
-        r.classList.add("elim");
-        elimZone.appendChild(r);
+    elimRows.forEach(row => {
+
+        row.classList.add("elim");
+        elimZone.appendChild(row);
+
     });
 
 });
-
 </script>
 
 </body>
