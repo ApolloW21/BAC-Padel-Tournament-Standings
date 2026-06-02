@@ -72,37 +72,42 @@
         .top3::before { background: #cd7f32; }
 
         .points { font-weight: bold; }
+
         .diff { font-weight: bold; }
 
         .positive { color: #16a34a; }
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION SIDE LABEL */
-        .elim-wrapper {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            gap: 12px;
+        /* ELIMINATION SECTION LAYOUT */
+        .elim-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
             align-items: stretch;
         }
 
         .elim-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
             background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fecaca;
             border-radius: 12px;
+            padding: 15px 10px;
+            font-weight: bold;
+            text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
+            min-width: 60px;
         }
 
         .elim-rows {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            flex: 1;
         }
 
         .elim {
@@ -118,6 +123,8 @@
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
     <div id="leaderboard" class="leaderboard"></div>
+
+    <div id="elim-container"></div>
 </div>
 
 <script>
@@ -233,35 +240,36 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
-    // Split leaderboard
+    // Split
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
     const elimRows = renderedRows.slice(-elimCount);
 
-    // Render main
     mainRows.forEach(r => container.appendChild(r));
 
-    // Elimination zone (side label)
-    const wrapper = document.createElement("div");
-    wrapper.className = "elim-wrapper";
+    // ELIMINATION SECTION
+    const elimContainer = document.getElementById("elim-container");
+
+    const section = document.createElement("div");
+    section.className = "elim-section";
 
     const label = document.createElement("div");
     label.className = "elim-label";
-    label.textContent = "🔻 Stage 1 Elimination Zone";
+    label.textContent = "STAGE 1 ELIMINATION ZONE";
 
-    const elimContainer = document.createElement("div");
-    elimContainer.className = "elim-rows";
+    const rowsDiv = document.createElement("div");
+    rowsDiv.className = "elim-rows";
 
     elimRows.forEach(r => {
         r.classList.add("elim");
-        elimContainer.appendChild(r);
+        rowsDiv.appendChild(r);
     });
 
-    wrapper.appendChild(label);
-    wrapper.appendChild(elimContainer);
+    section.appendChild(label);
+    section.appendChild(rowsDiv);
 
-    container.appendChild(wrapper);
+    elimContainer.appendChild(section);
 
 });
 
