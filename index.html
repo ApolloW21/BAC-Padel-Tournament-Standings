@@ -49,22 +49,13 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
-        /* HEADER BASE */
         .header {
             background: #111827;
             color: white;
+            font-weight: bold;
         }
 
-        /* Only column 4 header is bold */
-        .header div:nth-child(4) {
-            font-weight: 700;
-        }
-
-        .header div {
-            font-weight: 400;
-        }
-
-        /* MEDAL BAR */
+        /* medal bar */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -81,25 +72,27 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        /* Column 4 (Points) = bold ONLY */
+        /* 🔥 Column 4 (Points) emphasis */
         .points {
             font-weight: 700;
+            font-size: 1.05em;
+            color: #111827;
         }
 
-        /* Column 5 styling (NOT bold) */
-        .pos {
-            color: #16a34a;
-            font-weight: 400;
+        /* Game differential colours */
+        .positive {
+            color: #16a34a; /* green */
+            font-weight: 600;
         }
 
-        .neg {
-            color: #dc2626;
-            font-weight: 400;
+        .negative {
+            color: #dc2626; /* red */
+            font-weight: 600;
         }
 
         .zero {
             color: #111827;
-            font-weight: 400;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -126,7 +119,7 @@ fetch(csvUrl)
     const headers = ["Place", ...rows[0].slice(1)];
     let bodyRows = rows.slice(1);
 
-    // SORT: Points then Game Diff
+    // SORT
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
@@ -140,21 +133,15 @@ fetch(csvUrl)
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
-    headers.forEach((h, i) => {
+    headers.forEach(h => {
         const div = document.createElement("div");
         div.textContent = h;
-
-        // Only column 4 (Points) bold
-        if (i === 3) {
-            div.classList.add("points");
-        }
-
         headerRow.appendChild(div);
     });
 
     container.appendChild(headerRow);
 
-    // RANKING WITH TIES
+    // RANKING
     let displayRank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
@@ -174,19 +161,16 @@ fetch(csvUrl)
 
         let rankLabel = displayRank;
 
-        const tiedWithPrev =
-            i > 0 &&
-            Number(row[3]) === Number(bodyRows[i - 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i - 1][4]);
+        const tied =
+            (i > 0 &&
+                Number(row[3]) === Number(bodyRows[i - 1][3]) &&
+                Number(row[4]) === Number(bodyRows[i - 1][4]))
+            ||
+            (i < bodyRows.length - 1 &&
+                Number(row[3]) === Number(bodyRows[i + 1][3]) &&
+                Number(row[4]) === Number(bodyRows[i + 1][4]));
 
-        const tiedWithNext =
-            i < bodyRows.length - 1 &&
-            Number(row[3]) === Number(bodyRows[i + 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i + 1][4]);
-
-        if (tiedWithPrev || tiedWithNext) {
-            rankLabel = "=" + displayRank;
-        }
+        if (tied) rankLabel = "=" + displayRank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
@@ -197,25 +181,25 @@ fetch(csvUrl)
 
         const fullRow = [rankLabel, ...row.slice(1)];
 
-        fullRow.forEach((cell, colIndex) => {
-
+        fullRow.forEach((cell, index) => {
             const div = document.createElement("div");
 
-            // Column 4 (Points) bold
-            if (colIndex === 3) {
+            div.textContent = cell;
+
+            // COLUMN 4 (Points) -> index 3 after adding Place
+            if (index === 3) {
                 div.classList.add("points");
             }
 
-            // Column 5 (Game Diff) colour only, NOT bold
-            if (colIndex === 4) {
+            // COLUMN 5 (Game Diff) -> index 4
+            if (index === 4) {
                 const value = Number(cell);
 
-                if (value > 0) div.classList.add("pos");
-                else if (value < 0) div.classList.add("neg");
+                if (value > 0) div.classList.add("positive");
+                else if (value < 0) div.classList.add("negative");
                 else div.classList.add("zero");
             }
 
-            div.textContent = cell;
             rowDiv.appendChild(div);
         });
 
