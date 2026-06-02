@@ -25,12 +25,17 @@
             font-size: 32px;
         }
 
-        /* BOTH SECTIONS NOW USE SAME SPACING SYSTEM */
-        .leaderboard,
-        .elim-container {
+        .leaderboard {
             display: flex;
             flex-direction: column;
             gap: 12px;
+        }
+
+        .elim-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* ✅ FIX: restores spacing between elimination rows */
+            margin-top: 25px;
         }
 
         .row {
@@ -85,7 +90,6 @@
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* ELIMINATION ZONE TITLE */
         .zone-title {
             margin-top: 25px;
             padding: 12px;
@@ -109,12 +113,9 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <!-- MAIN LEADERBOARD -->
     <div id="leaderboard" class="leaderboard"></div>
 
-    <!-- ELIMINATION ZONE -->
-    <div class="zone-title">🔻 Stage 1 Elimination Zone</div>
-    <div id="elim-zone" class="elim-container"></div>
+    <div id="elim-zone" class="elim-zone"></div>
 </div>
 
 <script>
@@ -139,7 +140,7 @@ fetch(csvUrl)
         return Number(b[4]) - Number(a[4]);
     });
 
-    const leaderboard = document.getElementById("leaderboard");
+    const container = document.getElementById("leaderboard");
     const elimZone = document.getElementById("elim-zone");
 
     // HEADER
@@ -152,7 +153,7 @@ fetch(csvUrl)
         headerRow.appendChild(div);
     });
 
-    leaderboard.appendChild(headerRow);
+    container.appendChild(headerRow);
 
     let displayRank = 1;
     let renderedRows = [];
@@ -231,14 +232,21 @@ fetch(csvUrl)
         renderedRows.push(rowDiv);
     }
 
-    // Split top + elimination
+    // SPLIT
     const elimCount = 3;
 
     const mainRows = renderedRows.slice(0, -elimCount);
     const elimRows = renderedRows.slice(-elimCount);
 
-    mainRows.forEach(r => leaderboard.appendChild(r));
+    mainRows.forEach(r => container.appendChild(r));
 
+    // ZONE TITLE (unchanged visually)
+    const zoneTitle = document.createElement("div");
+    zoneTitle.className = "zone-title";
+    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+    elimZone.appendChild(zoneTitle);
+
+    // ELIM ROWS (now spaced correctly)
     elimRows.forEach(r => {
         r.classList.add("elim");
         elimZone.appendChild(r);
