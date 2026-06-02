@@ -25,10 +25,45 @@
             font-size: 32px;
         }
 
+        .layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        /* LEFT PANEL */
+        .zone {
+            width: 220px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 16px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .zone h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #dc2626;
+            text-align: center;
+        }
+
+        .zone-player {
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            background: #fef2f2;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* LEADERBOARD */
         .leaderboard {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            flex: 1;
         }
 
         .row {
@@ -40,13 +75,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
             align-items: center;
-            transition: transform 0.15s ease;
             position: relative;
-        }
-
-        .row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
         .header {
@@ -82,23 +111,6 @@
         .positive { color: #16a34a; }
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
-
-        /* ELIMINATION ZONE */
-        .zone-title {
-            margin-top: 25px;
-            padding: 12px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 10px;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .elim {
-            opacity: 0.85;
-            background: #fff5f5;
-        }
     </style>
 </head>
 
@@ -107,9 +119,18 @@
 <div class="container">
     <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <div id="leaderboard" class="leaderboard"></div>
+    <div class="layout">
 
-    <div id="elim-zone"></div>
+        <!-- LEFT ZONE PANEL -->
+        <div class="zone">
+            <h2>⚠ Stage 1 Elimination Zone</h2>
+            <div id="zone-list"></div>
+        </div>
+
+        <!-- MAIN LEADERBOARD -->
+        <div id="leaderboard" class="leaderboard"></div>
+
+    </div>
 </div>
 
 <script>
@@ -135,7 +156,7 @@ fetch(csvUrl)
     });
 
     const container = document.getElementById("leaderboard");
-    const elimZone = document.getElementById("elim-zone");
+    const zoneList = document.getElementById("zone-list");
 
     // HEADER
     const headerRow = document.createElement("div");
@@ -150,11 +171,8 @@ fetch(csvUrl)
     container.appendChild(headerRow);
 
     let displayRank = 1;
-    let renderedRows = [];
 
-    for (let i = 0; i < bodyRows.length; i++) {
-
-        const row = bodyRows[i];
+    bodyRows.forEach((row, i) => {
 
         if (i > 0) {
             const prev = bodyRows[i - 1];
@@ -185,10 +203,15 @@ fetch(csvUrl)
             rankLabel = "=" + displayRank;
         }
 
+        const fullRow = [rankLabel, ...row.slice(1)];
+
+        // MAIN ROW
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        const fullRow = [rankLabel, ...row.slice(1)];
+        if (i === 0) rowDiv.classList.add("top1");
+        if (i === 1) rowDiv.classList.add("top2");
+        if (i === 2) rowDiv.classList.add("top3");
 
         fullRow.forEach((cell, index) => {
 
@@ -198,8 +221,8 @@ fetch(csvUrl)
                 div.classList.add("points");
                 div.textContent = cell;
             }
-
             else if (index === 4) {
+
                 div.classList.add("diff");
 
                 let value = Number(cell);
@@ -207,15 +230,16 @@ fetch(csvUrl)
                 if (value > 0) {
                     div.classList.add("positive");
                     div.textContent = "+" + value;
-                } else if (value < 0) {
+                }
+                else if (value < 0) {
                     div.classList.add("negative");
                     div.textContent = value;
-                } else {
+                }
+                else {
                     div.classList.add("neutral");
                     div.textContent = "0";
                 }
             }
-
             else {
                 div.textContent = cell;
             }
@@ -223,27 +247,15 @@ fetch(csvUrl)
             rowDiv.appendChild(div);
         });
 
-        renderedRows.push(rowDiv);
-    }
+        container.appendChild(rowDiv);
 
-    // Split into main + elimination zone
-    const elimCount = 3;
-
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
-
-    mainRows.forEach(r => container.appendChild(r));
-
-    // Zone title
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
-    elimZone.appendChild(zoneTitle);
-
-    // Elimination rows
-    elimRows.forEach(r => {
-        r.classList.add("elim");
-        elimZone.appendChild(r);
+        // ZONE: bottom 3 players
+        if (i >= bodyRows.length - 3) {
+            const zoneItem = document.createElement("div");
+            zoneItem.className = "zone-player";
+            zoneItem.textContent = row[1]; // Player name column
+            zoneList.appendChild(zoneItem);
+        }
     });
 
 });
