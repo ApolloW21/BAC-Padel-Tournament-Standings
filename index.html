@@ -70,34 +70,46 @@ fetch(csvUrl)
 .then(response => response.text())
 .then(data => {
 
-    const rows = data.trim().split("\n").slice(1);
+    const rows = data.trim().split("\n");
 
-    const players = rows.map(row => {
+    const table = document.getElementById("leaderboard");
+
+    // Split first row = headers
+    const headers = rows[0].split(",");
+
+    // Build table header dynamically
+    const theadRow = document.createElement("tr");
+
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        theadRow.appendChild(th);
+    });
+
+    const thead = document.querySelector("thead");
+    thead.innerHTML = "";
+    thead.appendChild(theadRow);
+
+    // Build table body
+    const tbody = document.getElementById("leaderboard");
+
+    rows.slice(1).forEach(row => {
+
+        if (!row.trim()) return;
 
         const cols = row.split(",");
 
-        return {
-            name: cols[0],
-            score: Number(cols[1])
-        };
-    });
-
-    players.sort((a, b) => b.score - a.score);
-
-    const tbody = document.getElementById("leaderboard");
-
-    players.forEach((player, index) => {
-
         const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-            <td class="rank">${index + 1}</td>
-            <td>${player.name}</td>
-            <td class="score">${player.score}</td>
-        `;
+        cols.forEach(col => {
+            const td = document.createElement("td");
+            td.textContent = col;
+            tr.appendChild(td);
+        });
 
         tbody.appendChild(tr);
     });
+
 });
 
 </script>
