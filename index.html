@@ -16,8 +16,7 @@
 
         .container {
             width: 100%;
-            max-width: 950px;
-            position: relative;
+            max-width: 900px;
         }
 
         h1 {
@@ -72,41 +71,43 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        .points {
-            font-weight: bold;
-        }
-
-        .diff {
-            font-weight: bold;
-        }
+        .points { font-weight: bold; }
+        .diff { font-weight: bold; }
 
         .positive { color: #16a34a; }
         .negative { color: #dc2626; }
         .neutral { color: #111827; }
 
-        /* 🔴 Bottom 3 elimination styling */
-        .elimination {
-            background: #fff1f2 !important;
+        /* ELIMINATION SIDE LABEL */
+        .elim-wrapper {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 12px;
+            align-items: stretch;
         }
 
-        /* Left side label */
-        .elimination-label {
-            position: absolute;
-            left: -180px;
-            top: 0;
-            width: 160px;
-            height: 100%;
+        .elim-label {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: #b91c1c;
             text-align: center;
+            padding: 10px;
         }
 
-        /* Only show label container when needed */
-        .elimination-wrapper {
-            position: relative;
+        .elim-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .elim {
+            opacity: 0.85;
+            background: #fff5f5;
         }
     </style>
 </head>
@@ -137,6 +138,7 @@ fetch(csvUrl)
     bodyRows.sort((a, b) => {
         const pointsDiff = Number(b[3]) - Number(a[3]);
         if (pointsDiff !== 0) return pointsDiff;
+
         return Number(b[4]) - Number(a[4]);
     });
 
@@ -155,6 +157,7 @@ fetch(csvUrl)
     container.appendChild(headerRow);
 
     let displayRank = 1;
+    let renderedRows = [];
 
     for (let i = 0; i < bodyRows.length; i++) {
 
@@ -192,17 +195,6 @@ fetch(csvUrl)
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        // Bottom 3 elimination zone
-        const isBottom3 = i >= bodyRows.length - 3;
-
-        if (isBottom3) {
-            rowDiv.classList.add("elimination");
-        }
-
-        if (i === 0) rowDiv.classList.add("top1");
-        if (i === 1) rowDiv.classList.add("top2");
-        if (i === 2) rowDiv.classList.add("top3");
-
         const fullRow = [rankLabel, ...row.slice(1)];
 
         fullRow.forEach((cell, index) => {
@@ -238,23 +230,38 @@ fetch(csvUrl)
             rowDiv.appendChild(div);
         });
 
-        container.appendChild(rowDiv);
+        renderedRows.push(rowDiv);
     }
 
-    // Add elimination label after rendering
-    const rowsRendered = document.querySelectorAll(".row");
-    const bottomRows = Array.from(rowsRendered).slice(-3);
+    // Split leaderboard
+    const elimCount = 3;
 
-    if (bottomRows.length === 3) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "elimination-wrapper";
+    const mainRows = renderedRows.slice(0, -elimCount);
+    const elimRows = renderedRows.slice(-elimCount);
 
-        const label = document.createElement("div");
-        label.className = "elimination-label";
-        label.innerHTML = "⚠️<br>Stage 1<br>Elimination Zone";
+    // Render main
+    mainRows.forEach(r => container.appendChild(r));
 
-        container.appendChild(label);
-    }
+    // Elimination zone (side label)
+    const wrapper = document.createElement("div");
+    wrapper.className = "elim-wrapper";
+
+    const label = document.createElement("div");
+    label.className = "elim-label";
+    label.textContent = "🔻 Stage 1 Elimination Zone";
+
+    const elimContainer = document.createElement("div");
+    elimContainer.className = "elim-rows";
+
+    elimRows.forEach(r => {
+        r.classList.add("elim");
+        elimContainer.appendChild(r);
+    });
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(elimContainer);
+
+    container.appendChild(wrapper);
 
 });
 
