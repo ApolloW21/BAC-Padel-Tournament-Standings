@@ -49,12 +49,22 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
+        /* HEADER BASE */
         .header {
             background: #111827;
             color: white;
-            font-weight: bold;
         }
 
+        /* Only column 4 header is bold */
+        .header div:nth-child(4) {
+            font-weight: 700;
+        }
+
+        .header div {
+            font-weight: 400;
+        }
+
+        /* MEDAL BAR */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -71,23 +81,25 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        /* NEW: styling helpers */
+        /* Column 4 (Points) = bold ONLY */
         .points {
             font-weight: 700;
         }
 
+        /* Column 5 styling (NOT bold) */
         .pos {
-            color: #16a34a; /* green */
-            font-weight: 600;
+            color: #16a34a;
+            font-weight: 400;
         }
 
         .neg {
-            color: #dc2626; /* red */
-            font-weight: 600;
+            color: #dc2626;
+            font-weight: 400;
         }
 
         .zero {
-            color: #111827; /* black */
+            color: #111827;
+            font-weight: 400;
         }
     </style>
 </head>
@@ -128,9 +140,15 @@ fetch(csvUrl)
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
-    headers.forEach(h => {
+    headers.forEach((h, i) => {
         const div = document.createElement("div");
         div.textContent = h;
+
+        // Only column 4 (Points) bold
+        if (i === 3) {
+            div.classList.add("points");
+        }
+
         headerRow.appendChild(div);
     });
 
@@ -183,12 +201,12 @@ fetch(csvUrl)
 
             const div = document.createElement("div");
 
-            // Column 4 (Points) → bold
+            // Column 4 (Points) bold
             if (colIndex === 3) {
                 div.classList.add("points");
             }
 
-            // Column 5 (Game Differential) → colour rules
+            // Column 5 (Game Diff) colour only, NOT bold
             if (colIndex === 4) {
                 const value = Number(cell);
 
