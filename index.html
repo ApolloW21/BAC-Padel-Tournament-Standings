@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>BAC Padel Tournament Dashboard</title>
+    <title>BAC Padel Tournament Standings</title>
 
     <style>
         body {
@@ -16,7 +16,7 @@
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 900px;
         }
 
         h1 {
@@ -25,44 +25,11 @@
             font-size: 32px;
         }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 20px;
-            align-items: start;
-        }
-
-        .panel {
-            background: white;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .panel h2 {
-            text-align: center;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .match {
-            background: #f9fafb;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .muted { color: #6b7280; }
-        .score { font-weight: bold; }
-
-        /* ===== STANDINGS ===== */
-
         .leaderboard {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .row {
@@ -78,6 +45,31 @@
 
             opacity: 0;
             transform: translateY(20px);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .row.visible {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
         .header {
@@ -98,16 +90,37 @@
             border-radius: 12px 0 0 12px;
         }
 
-        .top1::before { background: gold; }
-        .top2::before { background: silver; }
-        .top3::before { background: #cd7f32; }
+        .top1::before {
+            background: gold;
+        }
 
-        .points { font-weight: bold; }
-        .diff { font-weight: bold; }
+        .top2::before {
+            background: silver;
+        }
 
-        .positive { color: #16a34a; }
-        .negative { color: #dc2626; }
-        .neutral { color: #111827; }
+        .top3::before {
+            background: #cd7f32;
+        }
+
+        .points {
+            font-weight: bold;
+        }
+
+        .diff {
+            font-weight: bold;
+        }
+
+        .positive {
+            color: #16a34a;
+        }
+
+        .negative {
+            color: #dc2626;
+        }
+
+        .neutral {
+            color: #111827;
+        }
 
         .zone-title {
             margin-top: 10px;
@@ -117,22 +130,36 @@
             border-radius: 10px;
             background: #fee2e2;
             color: #991b1b;
+            border: 1px solid #fecaca;
         }
 
         .elim {
             opacity: 0.85;
             background: #fff5f5;
         }
-
+        /* WATERFALL ANIMATION */
+        
+        .row,
+        .zone-title {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
         .animate-in {
-            animation: fadeInUp 0.5s ease forwards;
+            animation: cardAppear 0.6s ease forwards;
         }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
     </style>
 </head>
 
@@ -140,243 +167,252 @@
 
 <div class="container">
 
-    <h1>🏆 BAC Padel Tournament Dashboard</h1>
+    <h1>🏆 BAC Padel Tournament Standings</h1>
 
-    <div class="dashboard">
+    <div id="main" class="leaderboard"></div>
 
-        <div class="panel">
-            <h2>📊 Recent Matches</h2>
-            <div id="recent"></div>
-        </div>
-
-        <div>
-
-            <div id="main" class="leaderboard"></div>
-            <div id="elim-zone" class="leaderboard"></div>
-
-        </div>
-
-        <div class="panel">
-            <h2>📅 Upcoming Matches</h2>
-            <div id="upcoming"></div>
-        </div>
-
-    </div>
+    <div id="elim-zone" class="leaderboard"></div>
 
 </div>
 
 <script>
 
-/* =========================
-   SHEET SOURCES (FIXED)
-========================= */
+const baseUrl =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
 
-const BASE =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?output=csv";
+const csvUrl = baseUrl + "&_=" + Date.now();
 
-const STANDINGS_URL = BASE + "&gid=0&" + "_=" + Date.now();
-const RECENT_URL = BASE + "&gid=1383222678&" + "_=" + Date.now();
-const UPCOMING_URL = BASE + "&gid=1915991397&" + "_=" + Date.now();
+function animateValue(element, target, isDiff = false) {
 
-/* =========================
-   RECENT MATCHES
-========================= */
+    const duration = 800;
+    const startTime = performance.now();
 
-function renderRecent(rows) {
+    function update(currentTime) {
 
-    const el = document.getElementById("recent");
+        const progress = Math.min((currentTime - startTime) / duration, 1);
 
-    rows.slice(1).forEach(r => {
+        let current = Math.round(target * progress);
 
-        const div = document.createElement("div");
-        div.className = "match";
+        if (isDiff) {
 
-        const team1 = `${r[1]} & ${r[2]}`;
-        const team2 = `${r[4]} & ${r[5]}`;
+            if (current > 0) {
+                element.textContent = "+" + current;
+            }
+            else {
+                element.textContent = current;
+            }
 
-        const score =
-            `${r[9]}-${r[10]} | ${r[11]}-${r[12]} | ${r[13]}-${r[14]}`;
+        }
+        else {
+            element.textContent = current;
+        }
 
-        div.innerHTML = `
-            <strong>${team1} <span class="muted">vs</span> ${team2}</strong>
-            <div class="score">${score}</div>
-            <div class="muted">${r[6]} ${r[7]}</div>
-        `;
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
 
-        el.appendChild(div);
-    });
+    }
+
+    requestAnimationFrame(update);
 }
-
-/* =========================
-   UPCOMING MATCHES
-========================= */
-
-function renderUpcoming(rows) {
-
-    const el = document.getElementById("upcoming");
-
-    rows.slice(1).forEach(r => {
-
-        const div = document.createElement("div");
-        div.className = "match";
-
-        const team1 = `${r[1]} & ${r[2]}`;
-        const team2 = `${r[4]} & ${r[5]}`;
-
-        div.innerHTML = `
-            <strong>${team1} <span class="muted">vs</span> ${team2}</strong>
-            <div class="muted">Week ${r[0]}</div>
-            <div class="muted">${r[6]} ${r[7]} - ${r[8]}</div>
-        `;
-
-        el.appendChild(div);
-    });
-}
-
-/* =========================
-   ANIMATION
-========================= */
 
 function animateWaterfall() {
 
     const items = document.querySelectorAll(".row, .zone-title");
 
-    items.forEach((item, i) => {
+    items.forEach((item, index) => {
 
         setTimeout(() => {
+
             item.classList.add("animate-in");
-        }, i * 120);
+
+            const animatedCells = item.querySelectorAll("[data-target]");
+
+            animatedCells.forEach(cell => {
+
+                const target = Number(cell.dataset.target);
+                const isDiff = cell.dataset.diff === "true";
+
+                animateValue(cell, target, isDiff);
+
+            });
+
+        }, index * 120);
 
     });
 
 }
+    
+fetch(csvUrl, { cache: "no-store" })
+.then(response => response.text())
+.then(data => {
 
-/* =========================
-   FETCH ALL SHEETS
-========================= */
+    const rows = data.trim().split("\n").map(r => r.split(","));
 
-Promise.all([
-    fetch(STANDINGS_URL).then(r => r.text()),
-    fetch(RECENT_URL).then(r => r.text()),
-    fetch(UPCOMING_URL).then(r => r.text())
-])
-.then(([standingsCSV, recentCSV, upcomingCSV]) => {
+    const headers = ["Place", ...rows[0].slice(1)];
+    const bodyRows = rows.slice(1);
 
-    const standings = standingsCSV.trim().split("\n").map(r => r.split(","));
-    const recent = recentCSV.trim().split("\n").map(r => r.split(","));
-    const upcoming = upcomingCSV.trim().split("\n").map(r => r.split(","));
+    bodyRows.sort((a, b) => {
 
-    renderRecent(recent);
-    renderUpcoming(upcoming);
+        const pointDiff = Number(b[3]) - Number(a[3]);
 
-    /* =========================
-       STANDINGS
-    ========================= */
+        if (pointDiff !== 0) {
+            return pointDiff;
+        }
 
-    const body = standings.slice(1);
-
-    body.sort((a, b) => {
-        const pd = Number(b[3]) - Number(a[3]);
-        if (pd !== 0) return pd;
         return Number(b[4]) - Number(a[4]);
+
     });
 
     const main = document.getElementById("main");
-    const elim = document.getElementById("elim-zone");
+    const elimZone = document.getElementById("elim-zone");
 
-    const header = document.createElement("div");
-    header.className = "row header";
+    const headerRow = document.createElement("div");
+    headerRow.className = "row header";
 
-    ["Place","Player","Matches","Points","Diff"].forEach(h => {
-        const d = document.createElement("div");
-        d.textContent = h;
-        header.appendChild(d);
+    headers.forEach(header => {
+
+        const div = document.createElement("div");
+        div.textContent = header;
+        headerRow.appendChild(div);
+
     });
 
-    main.appendChild(header);
+    main.appendChild(headerRow);
 
-    let rendered = [];
+
+    const renderedRows = [];
+
     let rank = 1;
 
-    for (let i = 0; i < body.length; i++) {
+    for (let i = 0; i < bodyRows.length; i++) {
 
-        const r = body[i];
+        const row = bodyRows[i];
 
         if (i > 0) {
-            const p = body[i - 1];
 
-            const same =
-                Number(r[3]) === Number(p[3]) &&
-                Number(r[4]) === Number(p[4]);
+            const previous = bodyRows[i - 1];
 
-            if (!same) rank = i + 1;
+            const tied =
+                Number(row[3]) === Number(previous[3]) &&
+                Number(row[4]) === Number(previous[4]);
+
+            if (!tied) {
+                rank = i + 1;
+            }
         }
 
-        const tied =
-            (i > 0 &&
-            Number(r[3]) === Number(body[i - 1][3]) &&
-            Number(r[4]) === Number(body[i - 1][4])) ||
-            (i < body.length - 1 &&
-            Number(r[3]) === Number(body[i + 1][3]) &&
-            Number(r[4]) === Number(body[i + 1][4]));
+        const previousTie =
+            i > 0 &&
+            Number(row[3]) === Number(bodyRows[i - 1][3]) &&
+            Number(row[4]) === Number(bodyRows[i - 1][4]);
 
-        const label = tied ? "=" + rank : rank;
+        const nextTie =
+            i < bodyRows.length - 1 &&
+            Number(row[3]) === Number(bodyRows[i + 1][3]) &&
+            Number(row[4]) === Number(bodyRows[i + 1][4]);
 
-        const row = document.createElement("div");
-        row.className = "row";
+        const rankLabel =
+            (previousTie || nextTie)
+                ? "=" + rank
+                : rank;
 
-        if (rank === 1) row.classList.add("top1");
-        if (rank === 2) row.classList.add("top2");
-        if (rank === 3) row.classList.add("top3");
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "row";
 
-        [label, ...r.slice(1)].forEach((c, i) => {
+        if (rank === 1) rowDiv.classList.add("top1");
+        if (rank === 2) rowDiv.classList.add("top2");
+        if (rank === 3) rowDiv.classList.add("top3");
 
-            const d = document.createElement("div");
+        const displayRow = [rankLabel, ...row.slice(1)];
 
-            if (i === 3) {
-                d.className = "points";
+        displayRow.forEach((cell, columnIndex) => {
+        
+            const div = document.createElement("div");
+        
+            // Matches Played
+            if (columnIndex === 2) {
+        
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
+        
             }
-
-            if (i === 4) {
-                d.className = "diff";
-
-                const v = Number(c);
-
-                if (v > 0) d.classList.add("positive");
-                else if (v < 0) d.classList.add("negative");
-                else d.classList.add("neutral");
-
-                d.textContent = v > 0 ? "+" + v : v;
+        
+            // Points
+            else if (columnIndex === 3) {
+        
+                div.classList.add("points");
+        
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
+        
             }
+        
+            // Game Differential
+            else if (columnIndex === 4) {
+        
+                div.classList.add("diff");
+        
+                const value = Number(cell);
+        
+                if (value > 0) {
+                    div.classList.add("positive");
+                }
+                else if (value < 0) {
+                    div.classList.add("negative");
+                }
+                else {
+                    div.classList.add("neutral");
+                }
+        
+                div.dataset.target = value;
+                div.dataset.diff = "true";
+                div.textContent = "0";
+        
+            }
+        
+            // Place + Player
             else {
-                d.textContent = c;
+        
+                div.textContent = cell;
+        
             }
-
-            row.appendChild(d);
+        
+            rowDiv.appendChild(div);
+        
         });
 
-        rendered.push(row);
+        renderedRows.push(rowDiv);
+
+
+
     }
 
     const elimCount = 3;
 
-    rendered.slice(0, -elimCount).forEach(r => main.appendChild(r));
+    const mainRows = renderedRows.slice(0, -elimCount);
+    const elimRows = renderedRows.slice(-elimCount);
 
-    const title = document.createElement("div");
-    title.className = "zone-title";
-    title.textContent = "🔻 Stage 1 Elimination Zone";
+    mainRows.forEach(row => {
+        main.appendChild(row);
+    });
 
-    elim.appendChild(title);
+    const zoneTitle = document.createElement("div");
+    zoneTitle.className = "zone-title";
+    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
 
-    rendered.slice(-elimCount).forEach(r => {
-        r.classList.add("elim");
-        elim.appendChild(r);
+    elimZone.appendChild(zoneTitle);
+
+    elimRows.forEach(row => {
+
+        row.classList.add("elim");
+        elimZone.appendChild(row);
+
     });
 
     animateWaterfall();
 
 });
-
 </script>
 
 </body>
