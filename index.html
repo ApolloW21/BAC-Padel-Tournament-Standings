@@ -71,16 +71,19 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        /* NEW: highlight column 4 (Points) */
+        /* NEW styling */
         .points {
-            font-weight: 700;
-            font-size: 1.05em;
+            font-weight: 800;
+            font-size: 16px;
         }
 
-        /* Column 5 styling */
-        .pos { color: #16a34a; }   /* green */
-        .neg { color: #dc2626; }   /* red */
-        .zero { color: #111827; }  /* black */
+        .diff {
+            font-weight: 700;
+        }
+
+        .pos { color: green; }
+        .neg { color: red; }
+        .zero { color: black; }
     </style>
 </head>
 
@@ -128,7 +131,6 @@ fetch(csvUrl)
 
     container.appendChild(headerRow);
 
-    // RANKING
     let displayRank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
@@ -173,24 +175,43 @@ fetch(csvUrl)
 
         const fullRow = [rankLabel, ...row.slice(1)];
 
-        fullRow.forEach((cell, index) => {
+        fullRow.forEach((cell, idx) => {
+
             const div = document.createElement("div");
 
-            // Column 4 (Points) styling (index 3 after Place added)
-            if (index === 3) {
+            // Column indexes AFTER adding Place:
+            // 0 = Place
+            // 1 = Player
+            // 2 = Matches
+            // 3 = Points
+            // 4 = Game Diff
+
+            if (idx === 3) {
                 div.classList.add("points");
+                div.textContent = cell;
             }
 
-            // Column 5 (Game Differential) styling
-            if (index === 4) {
-                const num = Number(cell);
+            else if (idx === 4) {
+                div.classList.add("diff");
 
-                if (num > 0) div.classList.add("pos");
-                else if (num < 0) div.classList.add("neg");
-                else div.classList.add("zero");
+                const val = Number(cell);
+
+                if (val > 0) {
+                    div.classList.add("pos");
+                    div.textContent = "+" + val;
+                } else if (val < 0) {
+                    div.classList.add("neg");
+                    div.textContent = val;
+                } else {
+                    div.classList.add("zero");
+                    div.textContent = "0";
+                }
             }
 
-            div.textContent = cell;
+            else {
+                div.textContent = cell;
+            }
+
             rowDiv.appendChild(div);
         });
 
