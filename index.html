@@ -56,7 +56,7 @@
             font-weight: bold;
         }
 
-        /* MEDAL STRIP (fixed) */
+        /* TOP 3 MEDALS (FIXED) */
         .top1::before,
         .top2::before,
         .top3::before {
@@ -73,9 +73,13 @@
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
 
-        .points { font-weight: bold; }
+        .points {
+            font-weight: bold;
+        }
 
-        .diff { font-weight: bold; }
+        .diff {
+            font-weight: bold;
+        }
 
         .positive { color: #16a34a; }
         .negative { color: #dc2626; }
@@ -145,8 +149,10 @@ fetch(csvUrl)
 
     main.appendChild(headerRow);
 
-    let displayRank = 1;
-    let renderedRows = [];
+    let rendered = [];
+
+    // ---- RANK CALCULATION (FIXED) ----
+    let rank = 1;
 
     for (let i = 0; i < bodyRows.length; i++) {
 
@@ -155,39 +161,36 @@ fetch(csvUrl)
         if (i > 0) {
             const prev = bodyRows[i - 1];
 
-            const samePoints = Number(row[3]) === Number(prev[3]);
-            const sameDiff = Number(row[4]) === Number(prev[4]);
+            const same =
+                Number(row[3]) === Number(prev[3]) &&
+                Number(row[4]) === Number(prev[4]);
 
-            if (!(samePoints && sameDiff)) {
-                displayRank = i + 1;
+            if (!same) {
+                rank = i + 1;
             }
         }
 
-        let rankLabel = displayRank;
-
-        const tiedWithPrev =
+        const tiedPrev =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
 
         const next = bodyRows[i + 1];
 
-        const tiedWithNext =
+        const tiedNext =
             next &&
             Number(row[3]) === Number(next[3]) &&
             Number(row[4]) === Number(next[4]);
 
-        if (tiedWithPrev || tiedWithNext) {
-            rankLabel = "=" + displayRank;
-        }
+        const rankLabel = (tiedPrev || tiedNext) ? "=" + rank : rank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
 
-        // 🔥 RESTORED MEDALS BASED ON TRUE POSITION (i)
-        if (i === 0) rowDiv.classList.add("top1");
-        if (i === 1) rowDiv.classList.add("top2");
-        if (i === 2) rowDiv.classList.add("top3");
+        // TOP 3 BASED ON FINAL RANK VALUE
+        if (rank === 1) rowDiv.classList.add("top1");
+        if (rank === 2) rowDiv.classList.add("top2");
+        if (rank === 3) rowDiv.classList.add("top3");
 
         const fullRow = [rankLabel, ...row.slice(1)];
 
@@ -224,14 +227,14 @@ fetch(csvUrl)
             rowDiv.appendChild(div);
         });
 
-        renderedRows.push(rowDiv);
+        rendered.push(rowDiv);
     }
 
-    // Split
+    // SPLIT INTO ZONES
     const elimCount = 3;
 
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
+    const mainRows = rendered.slice(0, -elimCount);
+    const elimRows = rendered.slice(-elimCount);
 
     mainRows.forEach(r => main.appendChild(r));
 
