@@ -1,177 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>BAC Padel Tournament Standings</title>
+<meta charset="UTF-8">
+<title>BAC Padel Tournament Standings</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f6f7fb;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f6f7fb;
+    margin: 0;
+    padding: 30px;
+}
 
-        .container {
-            width: 100%;
-            max-width: 900px;
-        }
+/* ===== LAYOUT ===== */
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    max-width: 1600px;
+    margin: auto;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 32px;
-        }
+/* ===== PANELS ===== */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-        .leaderboard {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+.panel h2 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
 
-        .row {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            text-align: center;
-            align-items: center;
-            position: relative;
+/* ===== CENTER LEADERBOARD ===== */
+.row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    align-items: center;
+    position: relative;
 
-            opacity: 0;
-            transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(20px);
+}
 
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease;
-        }
+.animate-in {
+    animation: cardAppear 0.6s ease forwards;
+}
 
-        .row.visible {
-            animation: fadeInUp 0.5s ease forwards;
-        }
+@keyframes cardAppear {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+/* TOP 3 */
+.top1::before,
+.top2::before,
+.top3::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+}
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.top1::before { background: gold; }
+.top2::before { background: silver; }
+.top3::before { background: #cd7f32; }
 
-        .row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        }
+/* COLORS */
+.points { font-weight: bold; }
+.diff { font-weight: bold; }
+.positive { color: #16a34a; }
+.negative { color: #dc2626; }
+.neutral { color: #111827; }
 
-        .header {
-            background: #111827;
-            color: white;
-            font-weight: bold;
-        }
+/* ===== SIDE CARDS ===== */
+.card {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    font-size: 13px;
+    line-height: 1.4;
+}
 
-        .top1::before,
-        .top2::before,
-        .top3::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            border-radius: 12px 0 0 12px;
-        }
+.card-title {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 
-        .top1::before {
-            background: gold;
-        }
-
-        .top2::before {
-            background: silver;
-        }
-
-        .top3::before {
-            background: #cd7f32;
-        }
-
-        .points {
-            font-weight: bold;
-        }
-
-        .diff {
-            font-weight: bold;
-        }
-
-        .positive {
-            color: #16a34a;
-        }
-
-        .negative {
-            color: #dc2626;
-        }
-
-        .neutral {
-            color: #111827;
-        }
-
-        .zone-title {
-            margin-top: 10px;
-            padding: 12px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 10px;
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        .elim {
-            opacity: 0.85;
-            background: #fff5f5;
-        }
-        /* WATERFALL ANIMATION */
-        
-        .row,
-        .zone-title {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        
-        .animate-in {
-            animation: cardAppear 0.6s ease forwards;
-        }
-        
-        @keyframes cardAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+.small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="dashboard">
 
-    <h1>🏆 BAC Padel Tournament Standings</h1>
+    <!-- LEFT: RECENT MATCHES -->
+    <div class="panel" id="recent">
+        <h2>Recent Matches</h2>
+    </div>
 
-    <div id="main" class="leaderboard"></div>
+    <!-- CENTRE: LEADERBOARD -->
+    <div class="panel" id="main">
+        <h2>🏆 Standings</h2>
+    </div>
 
-    <div id="elim-zone" class="leaderboard"></div>
+    <!-- RIGHT: UPCOMING MATCHES -->
+    <div class="panel" id="upcoming">
+        <h2>Upcoming Matches</h2>
+    </div>
 
 </div>
 
@@ -182,35 +132,22 @@ const baseUrl =
 
 const csvUrl = baseUrl + "&_=" + Date.now();
 
-function animateValue(element, target, isDiff = false) {
+function animateValue(el, target, diff=false) {
 
+    const start = performance.now();
     const duration = 800;
-    const startTime = performance.now();
 
-    function update(currentTime) {
+    function update(t) {
 
-        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const p = Math.min((t - start) / duration, 1);
+        let val = Math.round(target * p);
 
-        let current = Math.round(target * progress);
+        el.textContent =
+            diff && val > 0 ? "+" + val :
+            diff ? val :
+            val;
 
-        if (isDiff) {
-
-            if (current > 0) {
-                element.textContent = "+" + current;
-            }
-            else {
-                element.textContent = current;
-            }
-
-        }
-        else {
-            element.textContent = current;
-        }
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-
+        if (p < 1) requestAnimationFrame(update);
     }
 
     requestAnimationFrame(update);
@@ -218,201 +155,173 @@ function animateValue(element, target, isDiff = false) {
 
 function animateWaterfall() {
 
-    const items = document.querySelectorAll(".row, .zone-title");
+    const items = document.querySelectorAll(".row, .card");
 
-    items.forEach((item, index) => {
+    items.forEach((item, i) => {
 
         setTimeout(() => {
 
             item.classList.add("animate-in");
 
-            const animatedCells = item.querySelectorAll("[data-target]");
+            item.querySelectorAll("[data-target]").forEach(el => {
 
-            animatedCells.forEach(cell => {
-
-                const target = Number(cell.dataset.target);
-                const isDiff = cell.dataset.diff === "true";
-
-                animateValue(cell, target, isDiff);
+                animateValue(
+                    el,
+                    Number(el.dataset.target),
+                    el.dataset.diff === "true"
+                );
 
             });
 
-        }, index * 120);
+        }, i * 100);
 
     });
-
 }
-    
+
 fetch(csvUrl, { cache: "no-store" })
-.then(response => response.text())
+.then(r => r.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
 
-    const headers = ["Place", ...rows[0].slice(1)];
-    const bodyRows = rows.slice(1);
+    let body = rows.slice(1);
 
-    bodyRows.sort((a, b) => {
+    /* =========================
+       LEADERBOARD
+    ========================== */
 
-        const pointDiff = Number(b[3]) - Number(a[3]);
-
-        if (pointDiff !== 0) {
-            return pointDiff;
-        }
-
-        return Number(b[4]) - Number(a[4]);
-
+    body.sort((a,b)=> {
+        let p = Number(b[3]) - Number(a[3]);
+        return p !== 0 ? p : Number(b[4]) - Number(a[4]);
     });
 
     const main = document.getElementById("main");
-    const elimZone = document.getElementById("elim-zone");
 
-    const headerRow = document.createElement("div");
-    headerRow.className = "row header";
+    const headers = ["Place", ...rows[0].slice(1,5)];
+    const header = document.createElement("div");
+    header.className = "row animate-in";
 
-    headers.forEach(header => {
-
-        const div = document.createElement("div");
-        div.textContent = header;
-        headerRow.appendChild(div);
-
+    headers.forEach(h=>{
+        const d=document.createElement("div");
+        d.textContent=h;
+        header.appendChild(d);
     });
 
-    main.appendChild(headerRow);
+    main.appendChild(header);
 
-
-    const renderedRows = [];
-
+    let rendered = [];
     let rank = 1;
 
-    for (let i = 0; i < bodyRows.length; i++) {
+    body.forEach((row,i)=>{
 
-        const row = bodyRows[i];
-
-        if (i > 0) {
-
-            const previous = bodyRows[i - 1];
-
-            const tied =
-                Number(row[3]) === Number(previous[3]) &&
-                Number(row[4]) === Number(previous[4]);
-
-            if (!tied) {
-                rank = i + 1;
-            }
+        if(i>0){
+            const prev = body[i-1];
+            if(!(row[3]==prev[3] && row[4]==prev[4])) rank=i+1;
         }
 
-        const previousTie =
-            i > 0 &&
-            Number(row[3]) === Number(bodyRows[i - 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i - 1][4]);
+        const tie =
+            i>0 &&
+            row[3]==body[i-1][3] &&
+            row[4]==body[i-1][4];
 
-        const nextTie =
-            i < bodyRows.length - 1 &&
-            Number(row[3]) === Number(bodyRows[i + 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i + 1][4]);
+        const next =
+            i<body.length-1 &&
+            row[3]==body[i+1][3] &&
+            row[4]==body[i+1][4];
 
-        const rankLabel =
-            (previousTie || nextTie)
-                ? "=" + rank
-                : rank;
+        const label = (tie||next) ? "=" + rank : rank;
 
-        const rowDiv = document.createElement("div");
-        rowDiv.className = "row";
+        const div = document.createElement("div");
+        div.className="row";
 
-        if (rank === 1) rowDiv.classList.add("top1");
-        if (rank === 2) rowDiv.classList.add("top2");
-        if (rank === 3) rowDiv.classList.add("top3");
+        if(rank===1) div.classList.add("top1");
+        if(rank===2) div.classList.add("top2");
+        if(rank===3) div.classList.add("top3");
 
-        const displayRow = [rankLabel, ...row.slice(1)];
+        const data=[label,...row.slice(1,5)];
 
-        displayRow.forEach((cell, columnIndex) => {
-        
-            const div = document.createElement("div");
-        
-            // Matches Played
-            if (columnIndex === 2) {
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
+        data.forEach((c,j)=>{
+
+            const cell=document.createElement("div");
+
+            if(j===3){
+                cell.className="points";
+                cell.dataset.target=c;
+                cell.textContent="0";
             }
-        
-            // Points
-            else if (columnIndex === 3) {
-        
-                div.classList.add("points");
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
+            else if(j===4){
+                let v=Number(c);
+                cell.className="diff";
+                cell.dataset.target=v;
+                cell.dataset.diff="true";
+                cell.textContent="0";
+                if(v>0) cell.classList.add("positive");
+                else if(v<0) cell.classList.add("negative");
+                else cell.classList.add("neutral");
             }
-        
-            // Game Differential
-            else if (columnIndex === 4) {
-        
-                div.classList.add("diff");
-        
-                const value = Number(cell);
-        
-                if (value > 0) {
-                    div.classList.add("positive");
-                }
-                else if (value < 0) {
-                    div.classList.add("negative");
-                }
-                else {
-                    div.classList.add("neutral");
-                }
-        
-                div.dataset.target = value;
-                div.dataset.diff = "true";
-                div.textContent = "0";
-        
-            }
-        
-            // Place + Player
             else {
-        
-                div.textContent = cell;
-        
+                cell.textContent=c;
             }
-        
-            rowDiv.appendChild(div);
-        
+
+            div.appendChild(cell);
         });
 
-        renderedRows.push(rowDiv);
-
-
-
-    }
-
-    const elimCount = 3;
-
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
-
-    mainRows.forEach(row => {
-        main.appendChild(row);
+        rendered.push(div);
+        main.appendChild(div);
     });
 
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+    /* =========================
+       RECENT MATCHES (LEFT)
+    ========================== */
 
-    elimZone.appendChild(zoneTitle);
+    const recent = document.getElementById("recent");
 
-    elimRows.forEach(row => {
+    body.slice(0,6).forEach(r=>{
 
-        row.classList.add("elim");
-        elimZone.appendChild(row);
+        const card=document.createElement("div");
+        card.className="card";
 
+        card.innerHTML=`
+        <div class="card-title">
+        ${r[27]} & ${r[1]} vs ${r[30]} & ${r[31]}
+        </div>
+        <div class="small">${r[32]} ${r[33]}</div>
+        <div>Set 1: ${r[35]}-${r[36]}</div>
+        <div>Set 2: ${r[37]}-${r[38]}</div>
+        <div>Set 3: ${r[39]}-${r[40]}</div>
+        <div class="small">Points: ${r[48]}-${r[49]}</div>
+        `;
+
+        recent.appendChild(card);
+    });
+
+    /* =========================
+       UPCOMING MATCHES (RIGHT)
+    ========================== */
+
+    const upcoming = document.getElementById("upcoming");
+
+    body.slice(0,6).forEach(r=>{
+
+        const card=document.createElement("div");
+        card.className="card";
+
+        card.innerHTML=`
+        <div class="card-title">
+        Week ${r[52]} - Court TBD
+        </div>
+        <div>${r[53]} & ${r[54]}</div>
+        <div>vs ${r[56]} & ${r[57]}</div>
+        <div class="small">${r[58]} ${r[59]} - ${r[60]}</div>
+        `;
+
+        upcoming.appendChild(card);
     });
 
     animateWaterfall();
 
 });
+
 </script>
 
 </body>
