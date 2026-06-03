@@ -267,71 +267,64 @@
 
         @media (max-width: 1000px) {
         
-            /* Stack main layout */
+            /* STACK MAIN SECTIONS */
             .layout {
                 flex-direction: column;
-                gap: 20px;
-                padding: 20px;
+                gap: 16px;
+                padding: 16px;
             }
         
-            /* Standings always on top */
+            /* STANDINGS ALWAYS FIRST */
             .container {
                 width: 100%;
             }
         
-            /* Put both sidebars into a 2-column grid */
+            /* SIDE BY SIDE WRAPPER FOR BOTH SIDE PANELS */
             .sidebar,
             .sidebar-right {
-                width: 100% !important;
-            }
-        
-            /* Make a row layout for the two side panels */
-            .sidebar {
-                margin-bottom: 0;
-            }
-        
-            /* Wrap both side sections visually */
-            body {
-                overflow-x: hidden;
-            }
-        
-            /* Turn layout into structured mobile flow */
-            .layout {
+                width: 50%;
                 display: flex;
                 flex-direction: column;
             }
         
-            /* Create side-by-side effect using grid on a wrapper illusion */
-            .sidebar {
-                order: 2;
-            }
-        
-            .sidebar-right {
-                order: 2;
-            }
-        
-            /* This is the key part: make them sit side by side */
-            .sidebar,
-            .sidebar-right {
-                width: 50% !important;
-            }
-        
-            /* Force them into a row */
+            /* FORCE BOTH SIDEBARS INTO SAME ROW */
             .layout {
-                align-items: stretch;
+                display: flex;
             }
         
-            /* Put sidebars in same row */
+            /* WRAP SIDEBARS INTO ROW BEHAVIOUR */
             .sidebar,
             .sidebar-right {
-                display: inline-block;
-                vertical-align: top;
+                flex: 1;
+                min-width: 0;
             }
         
-            /* Ensure container sits above */
-            .container {
-                order: 1;
+            /* REDUCE CARD SCALE ON MOBILE (IMPORTANT FIX) */
+            .match-card,
+            .upcoming-card {
+                padding: 12px;
+                font-size: 12px;
+                transform: scale(0.98);
             }
+        
+            /* FIX UPCOMING GRID SO IT CAN SHRINK */
+            .upcoming-card {
+                grid-template-columns: 1fr 90px 1fr;
+            }
+        
+            .upcoming-teams {
+                font-size: 14px;
+                line-height: 1.2;
+            }
+        
+            .upcoming-week {
+                font-size: 12px;
+            }
+        
+            .upcoming-meta {
+                font-size: 12px;
+            }
+        
         }
 
     </style>
