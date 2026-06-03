@@ -46,39 +46,56 @@
         
         /* Upcoming cards slightly different styling */
         .upcoming-card {
-            /* MATCH Recent Matches sizing exactly */
             background: white;
             border-radius: 14px;
             padding: 18px 18px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         
             display: grid;
-            grid-template-columns: 1fr;
-            row-gap: 6px;
-            font-size: 13px;
-        
-            /* subtle difference so it still feels "upcoming" */
-            border: 1px solid #e5e7eb;
+            grid-template-columns: 1fr 140px 1fr;
+            grid-template-rows: auto auto auto;
+            column-gap: 12px;
+            row-gap: 8px;
         }
         
         .upcoming-week {
-            font-weight: bold;
-            font-size: 12px;
+            grid-column: 1 / 4;
+            text-align: center;
+            font-size: 14px;
             color: #6b7280;
-            margin-bottom: 6px;
         }
         
         .upcoming-teams {
-            font-weight: 700;
-            font-size: 16px;
+            grid-column: 1 / 4;
+            display: grid;
+            grid-template-columns: 1fr 140px 1fr;
+            align-items: center;
             text-align: center;
-            line-height: 1.4;
+            font-size: 18px;
+            font-weight: 700;
         }
         
-        .upcoming-meta {
-            font-size: 13px;
-            color: #6b7280;
+        /* left / right alignment inside same style system */
+        .upcoming-left {
             text-align: center;
+        }
+        
+        .upcoming-right {
+            text-align: center;
+        }
+        
+        /* middle vs line */
+        .upcoming-vs {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        /* meta bottom row */
+        .upcoming-meta {
+            grid-column: 1 / 4;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
         }
 
         .sidebar h2 {
@@ -374,25 +391,22 @@ fetch(matchesUrl)
         const gain2 = Number(row[10]);
 
         card.innerHTML = `
-            <div class="match-meta">${row[4]} • ${row[5]}</div>
+            <div class="upcoming-week">Week ${row[0]}</div>
         
-            <div class="team-left">
-                ${row[0]}<br>${row[1]}
-            </div>
-            
-            <div class="team-right">
-                ${row[2]}<br>${row[3]}
-            </div>
+            <div class="upcoming-teams">
+                <div class="upcoming-left">
+                    ${row[1]}<br>${row[2]}
+                </div>
         
-            <div class="match-score">
-                <div class="set">${row[6]}</div>
-                <div class="set">${row[7]}</div>
-                <div class="set">${row[8]}</div>
+                <div class="upcoming-vs">vs</div>
+        
+                <div class="upcoming-right">
+                    ${row[3]}<br>${row[4]}
+                </div>
             </div>
         
-            <div class="points-gain">
-                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
-                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
+            <div class="upcoming-meta">
+                ${row[5]} • ${row[6]} - ${row[7]}
             </div>
         `;
 
