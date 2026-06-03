@@ -46,12 +46,19 @@
         
         /* Upcoming cards slightly different styling */
         .upcoming-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            /* MATCH Recent Matches sizing exactly */
+            background: white;
             border-radius: 14px;
-            padding: 14px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+            padding: 18px 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        
+            display: grid;
+            grid-template-columns: 1fr;
+            row-gap: 6px;
             font-size: 13px;
+        
+            /* subtle difference so it still feels "upcoming" */
+            border: 1px solid #e5e7eb;
         }
         
         .upcoming-week {
