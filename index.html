@@ -1,192 +1,181 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>BAC Padel Tournament Standings</title>
+    <meta charset="UTF-8">
+    <title>BAC Padel Tournament Standings</title>
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f6f7fb;
-    margin: 0;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
 
-/* NEW LAYOUT */
-.container {
-    width: 100%;
-    max-width: 1400px;
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-}
+        /* NEW: layout wrapper */
+        .layout {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px;
+            align-items: flex-start;
+        }
 
-.left-panel {
-    width: 35%;
-}
+        /* LEFT SIDEBAR */
+        .sidebar {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-.right-panel {
-    width: 65%;
-}
+        .sidebar h2 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
 
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 32px;
-}
+        .match-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 13px;
+            line-height: 1.4;
+        }
 
-/* =======================
-   STANDINGS (UNCHANGED)
-======================= */
+        .match-teams {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
 
-.leaderboard {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-}
+        .match-meta {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
 
-.row {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    text-align: center;
-    align-items: center;
-    position: relative;
+        .match-score {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
 
-    opacity: 0;
-    transform: translateY(20px);
-}
+        .points-gain {
+            font-size: 12px;
+        }
 
-.row.visible {
-    animation: fadeInUp 0.5s ease forwards;
-}
+        .gain-pos { color: #16a34a; }
+        .gain-neg { color: #dc2626; }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        /* MAIN CONTENT */
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
 
-.header {
-    background: #111827;
-    color: white;
-    font-weight: bold;
-}
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
 
-.top1::before,
-.top2::before,
-.top3::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 6px;
-    border-radius: 12px 0 0 12px;
-}
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-.top1::before { background: gold; }
-.top2::before { background: silver; }
-.top3::before { background: #cd7f32; }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            align-items: center;
+            position: relative;
+        }
 
-.points { font-weight: bold; }
-.diff { font-weight: bold; }
+        .header {
+            background: #111827;
+            color: white;
+            font-weight: bold;
+        }
 
-.positive { color: #16a34a; }
-.negative { color: #dc2626; }
-.neutral { color: #111827; }
+        .top1::before,
+        .top2::before,
+        .top3::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            border-radius: 12px 0 0 12px;
+        }
 
-.zone-title {
-    margin-top: 10px;
-    padding: 12px;
-    text-align: center;
-    font-weight: bold;
-    border-radius: 10px;
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
+        .top1::before { background: gold; }
+        .top2::before { background: silver; }
+        .top3::before { background: #cd7f32; }
 
-.elim {
-    opacity: 0.85;
-    background: #fff5f5;
-}
+        .points { font-weight: bold; }
+        .diff { font-weight: bold; }
 
-/* =======================
-   RECENT MATCHES
-======================= */
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #111827; }
 
-.matches {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        .zone-title {
+            margin-top: 10px;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
 
-.match-card {
-    background: white;
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    font-size: 14px;
-}
+        .elim {
+            opacity: 0.85;
+            background: #fff5f5;
+        }
 
-.match-header {
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #111827;
-}
+        /* ANIMATION */
+        .row,
+        .zone-title {
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-.match-teams {
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
-    font-weight: bold;
-}
+        .animate-in {
+            animation: cardAppear 0.6s ease forwards;
+        }
 
-.match-sub {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: #6b7280;
-    margin-top: 4px;
-}
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.match-sets {
-    text-align: center;
-    margin: 10px 0;
-    font-size: 13px;
-    color: #374151;
-    line-height: 1.4;
-}
-
-.match-points {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-</style>
+    </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="layout">
 
-    <!-- LEFT: RECENT MATCHES -->
-    <div class="left-panel">
-        <h1>🆕 Recent Matches</h1>
-        <div id="matches" class="matches"></div>
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <h2>📅 Recent Matches</h2>
+        <div id="matches"></div>
     </div>
 
-    <!-- RIGHT: STANDINGS -->
-    <div class="right-panel">
+    <!-- MAIN -->
+    <div class="container">
 
         <h1>🏆 BAC Padel Tournament Standings</h1>
 
@@ -202,58 +191,102 @@ h1 {
 const baseUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
 
-const csvUrl = baseUrl + "&_=" + Date.now();
-
-/* =========================
-   MATCHES FETCH (NEW)
-========================= */
-
 const matchesUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=255620112&single=true&output=csv";
 
-/* NOTE:
-   Replace NEW_GID_HERE with your "Recent Matches" sheet gid
-*/
+const csvUrl = baseUrl + "&_=" + Date.now();
 
-fetch(matchesUrl + "&_=" + Date.now(), { cache: "no-store" })
-.then(res => res.text())
+function animateValue(element, target, isDiff = false) {
+
+    const duration = 800;
+    const startTime = performance.now();
+
+    const isDecimal = !Number.isInteger(target);
+
+    function update(currentTime) {
+
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+
+        let current;
+
+        if (isDecimal) {
+            current = target * progress;
+            current = Math.round(current * 10) / 10;
+        } else {
+            current = Math.round(target * progress);
+        }
+
+        if (isDiff) {
+            element.textContent = current > 0 ? "+" + current : current;
+        } else {
+            element.textContent = current;
+        }
+
+        if (progress < 1) requestAnimationFrame(update);
+    }
+
+    requestAnimationFrame(update);
+}
+
+function animateWaterfall() {
+
+    const items = document.querySelectorAll(".row, .zone-title");
+
+    items.forEach((item, index) => {
+
+        setTimeout(() => {
+
+            item.classList.add("animate-in");
+
+            item.querySelectorAll("[data-target]").forEach(cell => {
+
+                const target = Number(cell.dataset.target);
+                const isDiff = cell.dataset.diff === "true";
+
+                animateValue(cell, target, isDiff);
+
+            });
+
+        }, index * 120);
+
+    });
+
+}
+
+/* ---------------- MATCHES SIDEBAR ---------------- */
+
+fetch(matchesUrl)
+.then(r => r.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
+    const headers = rows[0];
     const body = rows.slice(1);
 
     const container = document.getElementById("matches");
 
-    body.forEach(r => {
-
-        const [
-            t1p1, t1p2,
-            t2p1, t2p2,
-            date, time,
-            s1, s2, s3,
-            p1, p2
-        ] = r;
+    body.forEach(row => {
 
         const card = document.createElement("div");
         card.className = "match-card";
 
+        const team1 = `${row[0]} & ${row[1]}`;
+        const team2 = `${row[2]} & ${row[3]}`;
+
+        const score = `${row[6]} - ${row[7]} - ${row[8]}`;
+
+        const gain1 = Number(row[9]);
+        const gain2 = Number(row[10]);
+
         card.innerHTML = `
-            <div class="match-header">${date} • ${time}</div>
-
-            <div class="match-teams">
-                <div>${t1p1}<br>${t1p2}</div>
-                <div>${t2p1}<br>${t2p2}</div>
-            </div>
-
-            <div class="match-sets">
-                Set 1: ${s1}<br>
-                Set 2: ${s2}<br>
-                Set 3: ${s3}
-            </div>
-
-            <div class="match-points">
-                <div>${p1 > 0 ? "+" + p1 : p1}</div>
-                <div>${p2 > 0 ? "+" + p2 : p2}</div>
+            <div class="match-teams">${team1} vs ${team2}</div>
+            <div class="match-meta">${row[4]} • ${row[5]}</div>
+            <div class="match-score">Sets: ${score}</div>
+            <div class="points-gain">
+                ${team1}: <span class="${gain1 >= 0 ? 'gain-pos' : 'gain-neg'}">
+                ${gain1 >= 0 ? '+' : ''}${gain1}</span><br>
+                ${team2}: <span class="${gain2 >= 0 ? 'gain-pos' : 'gain-neg'}">
+                ${gain2 >= 0 ? '+' : ''}${gain2}</span>
             </div>
         `;
 
@@ -263,26 +296,20 @@ fetch(matchesUrl + "&_=" + Date.now(), { cache: "no-store" })
 
 });
 
-/* =========================
-   STANDINGS (UNCHANGED)
-========================= */
+/* ---------------- STANDINGS ---------------- */
 
 fetch(csvUrl, { cache: "no-store" })
 .then(response => response.text())
 .then(data => {
 
     const rows = data.trim().split("\n").map(r => r.split(","));
-
     const headers = ["Place", ...rows[0].slice(1)];
     const bodyRows = rows.slice(1);
 
     bodyRows.sort((a, b) => {
-
-        const pointDiff = Number(b[3]) - Number(a[3]);
-        if (pointDiff !== 0) return pointDiff;
-
+        const pd = Number(b[3]) - Number(a[3]);
+        if (pd !== 0) return pd;
         return Number(b[4]) - Number(a[4]);
-
     });
 
     const main = document.getElementById("main");
@@ -308,27 +335,24 @@ fetch(csvUrl, { cache: "no-store" })
 
         if (i > 0) {
             const prev = bodyRows[i - 1];
-
-            const same =
-                Number(row[3]) === Number(prev[3]) &&
-                Number(row[4]) === Number(prev[4]);
-
-            if (!same) rank = i + 1;
+            if (!(Number(row[3]) === Number(prev[3]) && Number(row[4]) === Number(prev[4]))) {
+                rank = i + 1;
+            }
         }
 
-        const prevTie =
+        const tiedPrev =
             i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
             Number(row[4]) === Number(bodyRows[i - 1][4]);
 
         const next = bodyRows[i + 1];
 
-        const nextTie =
+        const tiedNext =
             next &&
             Number(row[3]) === Number(next[3]) &&
             Number(row[4]) === Number(next[4]);
 
-        const rankLabel = (prevTie || nextTie) ? "=" + rank : rank;
+        const rankLabel = (tiedPrev || tiedNext) ? "=" + rank : rank;
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
@@ -337,30 +361,35 @@ fetch(csvUrl, { cache: "no-store" })
         if (rank === 2) rowDiv.classList.add("top2");
         if (rank === 3) rowDiv.classList.add("top3");
 
-        const fullRow = [rankLabel, ...row.slice(1)];
+        const displayRow = [rankLabel, ...row.slice(1)];
 
-        fullRow.forEach((cell, i) => {
+        displayRow.forEach((cell, i) => {
 
             const div = document.createElement("div");
 
-            if (i === 3) {
+            if (i === 2) {
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
+            }
+
+            else if (i === 3) {
                 div.classList.add("points");
-                div.textContent = cell;
+                div.dataset.target = Number(cell);
+                div.textContent = "0";
             }
 
             else if (i === 4) {
-
                 div.classList.add("diff");
 
                 const v = Number(cell);
-
-                if (v > 0) div.textContent = "+" + v;
-                else div.textContent = v;
 
                 if (v > 0) div.classList.add("positive");
                 else if (v < 0) div.classList.add("negative");
                 else div.classList.add("neutral");
 
+                div.dataset.target = v;
+                div.dataset.diff = "true";
+                div.textContent = "0";
             }
 
             else {
@@ -384,7 +413,6 @@ fetch(csvUrl, { cache: "no-store" })
     const zoneTitle = document.createElement("div");
     zoneTitle.className = "zone-title";
     zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
-
     elimZone.appendChild(zoneTitle);
 
     elimRows.forEach(r => {
@@ -392,8 +420,11 @@ fetch(csvUrl, { cache: "no-store" })
         elimZone.appendChild(r);
     });
 
+    animateWaterfall();
+
 });
 
 </script>
+
 </body>
 </html>
