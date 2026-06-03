@@ -265,66 +265,25 @@
             gap: 12px;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 900px) {
         
-            /* STACK MAIN SECTIONS */
-            .layout {
-                flex-direction: column;
-                gap: 16px;
-                padding: 16px;
-            }
-        
-            /* STANDINGS ALWAYS FIRST */
-            .container {
-                width: 100%;
-            }
-        
-            /* SIDE BY SIDE WRAPPER FOR BOTH SIDE PANELS */
+            /* FORCE BOTH SIDEBARS TO FIT MOBILE SCREEN */
             .sidebar,
             .sidebar-right {
-                width: 50%;
-                display: flex;
-                flex-direction: column;
+                width: calc(50% - 6px) !important;
             }
         
-            /* FORCE BOTH SIDEBARS INTO SAME ROW */
-            .layout {
-                display: flex;
-            }
-        
-            /* WRAP SIDEBARS INTO ROW BEHAVIOUR */
+            /* Make sure they actually sit side-by-side */
             .sidebar,
             .sidebar-right {
-                flex: 1;
-                min-width: 0;
+                display: inline-block;
+                vertical-align: top;
             }
         
-            /* REDUCE CARD SCALE ON MOBILE (IMPORTANT FIX) */
-            .match-card,
-            .upcoming-card {
-                padding: 12px;
-                font-size: 12px;
-                transform: scale(0.98);
+            /* Prevent overflow from fixed desktop width */
+            .sidebar-right {
+                max-width: 100%;
             }
-        
-            /* FIX UPCOMING GRID SO IT CAN SHRINK */
-            .upcoming-card {
-                grid-template-columns: 1fr 90px 1fr;
-            }
-        
-            .upcoming-teams {
-                font-size: 14px;
-                line-height: 1.2;
-            }
-        
-            .upcoming-week {
-                font-size: 12px;
-            }
-        
-            .upcoming-meta {
-                font-size: 12px;
-            }
-        
         }
 
     </style>
