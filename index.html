@@ -9,67 +9,52 @@
             font-family: Arial, sans-serif;
             background: #f6f7fb;
             margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
+            padding: 30px;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 32px;
-        }
-
-        .leaderboard {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
             margin-bottom: 20px;
         }
 
+        /* 3 COLUMN LAYOUT */
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        /* LEADERBOARD (your existing style simplified into column) */
         .row {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             background: white;
-            padding: 16px;
+            padding: 14px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
-            align-items: center;
-            position: relative;
-
-            opacity: 0;
-            transform: translateY(20px);
-
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease;
-        }
-
-        .row.visible {
-            animation: fadeInUp 0.5s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
         .header {
@@ -78,349 +63,258 @@
             font-weight: bold;
         }
 
-        .top1::before,
-        .top2::before,
-        .top3::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            border-radius: 12px 0 0 12px;
-        }
+        .points { font-weight: bold; }
+        .diff { font-weight: bold; }
 
-        .top1::before {
-            background: gold;
-        }
-
-        .top2::before {
-            background: silver;
-        }
-
-        .top3::before {
-            background: #cd7f32;
-        }
-
-        .points {
-            font-weight: bold;
-        }
-
-        .diff {
-            font-weight: bold;
-        }
-
-        .positive {
-            color: #16a34a;
-        }
-
-        .negative {
-            color: #dc2626;
-        }
-
-        .neutral {
-            color: #111827;
-        }
+        .positive { color: #16a34a; }
+        .negative { color: #dc2626; }
+        .neutral { color: #111827; }
 
         .zone-title {
-            margin-top: 10px;
-            padding: 12px;
+            margin: 10px 0;
+            padding: 10px;
             text-align: center;
             font-weight: bold;
-            border-radius: 10px;
+            border-radius: 8px;
             background: #fee2e2;
             color: #991b1b;
-            border: 1px solid #fecaca;
         }
 
-        .elim {
-            opacity: 0.85;
-            background: #fff5f5;
-        }
-        /* WATERFALL ANIMATION */
-        
-        .row,
-        .zone-title {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        
-        .animate-in {
-            animation: cardAppear 0.6s ease forwards;
-        }
-        
-        @keyframes cardAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        /* MEDALS */
+        .top1 { border-left: 5px solid gold; }
+        .top2 { border-left: 5px solid silver; }
+        .top3 { border-left: 5px solid #cd7f32; }
+
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<h1>🏆 BAC Padel Tournament Hub</h1>
 
-    <h1>🏆 BAC Padel Tournament Standings</h1>
+<div class="layout">
 
-    <div id="main" class="leaderboard"></div>
+    <!-- LEFT: RECENT -->
+    <div class="panel" id="recent"></div>
 
-    <div id="elim-zone" class="leaderboard"></div>
+    <!-- CENTER: LEADERBOARD -->
+    <div class="panel">
+        <div id="main"></div>
+        <div id="elim-zone"></div>
+    </div>
+
+    <!-- RIGHT: UPCOMING -->
+    <div class="panel" id="upcoming"></div>
 
 </div>
 
 <script>
 
 const baseUrl =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=0&single=true&output=csv";
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?output=csv";
 
-const csvUrl = baseUrl + "&_=" + Date.now();
+// CHANGE THESE TWO ONCE YOU KNOW GIDs
+const recentUrl = baseUrl + "&gid=255620112";
+const upcomingUrl = baseUrl + "&gid=1642789849";
 
-function animateValue(element, target, isDiff = false) {
-
-    const duration = 800;
-    const startTime = performance.now();
-
-    const isDecimal = !Number.isInteger(target);
-
-    function update(currentTime) {
-
-        const progress = Math.min((currentTime - startTime) / duration, 1);
-
-        let current;
-
-        if (isDecimal) {
-            // keep decimals (e.g. 1.5, 2.5)
-            current = (target * progress);
-            current = Math.round(current * 10) / 10; // 1 decimal place
-        } else {
-            current = Math.round(target * progress);
-        }
-
-        if (isDiff) {
-
-            if (current > 0) {
-                element.textContent = "+" + current;
-            } else {
-                element.textContent = current;
-            }
-
-        } else {
-            element.textContent = current;
-        }
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-
-    }
-
-    requestAnimationFrame(update);
+// ---------------- FETCH HELPER ----------------
+async function fetchCSV(url) {
+    const res = await fetch(url + "&_=" + Date.now(), { cache: "no-store" });
+    const text = await res.text();
+    return text.trim().split("\n").map(r => r.split(","));
 }
 
-function animateWaterfall() {
+// ---------------- RECENT MATCHES ----------------
+function renderRecent(rows) {
 
-    const items = document.querySelectorAll(".row, .zone-title");
+    const container = document.getElementById("recent");
 
-    items.forEach((item, index) => {
+    const title = document.createElement("div");
+    title.className = "zone-title";
+    title.textContent = "🕒 Recent Matches";
+    container.appendChild(title);
 
-        setTimeout(() => {
+    rows.slice(1).forEach(r => {
 
-            item.classList.add("animate-in");
+        const card = document.createElement("div");
+        card.className = "card";
 
-            const animatedCells = item.querySelectorAll("[data-target]");
+        card.innerHTML = `
+            <div><b>${r[4]} ${r[5]}</b></div>
+            <div>${r[0]} & ${r[1]}</div>
+            <div>vs</div>
+            <div>${r[2]} & ${r[3]}</div>
+            <div style="margin-top:6px;">
+                Sets: ${r[6]} | ${r[7]} | ${r[8]}
+            </div>
+            <div>
+                Points: ${r[9]} - ${r[10]}
+            </div>
+        `;
 
-            animatedCells.forEach(cell => {
-
-                const target = Number(cell.dataset.target);
-                const isDiff = cell.dataset.diff === "true";
-
-                animateValue(cell, target, isDiff);
-
-            });
-
-        }, index * 120);
-
+        container.appendChild(card);
     });
-
 }
-    
-fetch(csvUrl, { cache: "no-store" })
-.then(response => response.text())
-.then(data => {
 
-    const rows = data.trim().split("\n").map(r => r.split(","));
+// ---------------- UPCOMING MATCHES ----------------
+function renderUpcoming(rows) {
+
+    const container = document.getElementById("upcoming");
+
+    const title = document.createElement("div");
+    title.className = "zone-title";
+    title.textContent = "📅 Upcoming Matches";
+    container.appendChild(title);
+
+    rows.slice(1).forEach(r => {
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <div><b>Week ${r[0]}</b></div>
+            <div>${r[4]} ${r[5]}</div>
+            <div>vs</div>
+            <div>${r[6]} ${r[7]}</div>
+            <div style="margin-top:6px;">
+                ${r[1]} & ${r[2]}<br>
+                ${r[3]} & ${r[4]}
+            </div>
+            <div style="margin-top:6px;">
+                ${r[5]} - ${r[6]}
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+// ---------------- LEADERBOARD (your existing logic stays) ----------------
+function renderLeaderboard(rows) {
+
+    const main = document.getElementById("main");
+    const elimZone = document.getElementById("elim-zone");
 
     const headers = ["Place", ...rows[0].slice(1)];
     const bodyRows = rows.slice(1);
 
     bodyRows.sort((a, b) => {
-
-        const pointDiff = Number(b[3]) - Number(a[3]);
-
-        if (pointDiff !== 0) {
-            return pointDiff;
-        }
-
+        const p = Number(b[3]) - Number(a[3]);
+        if (p !== 0) return p;
         return Number(b[4]) - Number(a[4]);
-
     });
-
-    const main = document.getElementById("main");
-    const elimZone = document.getElementById("elim-zone");
 
     const headerRow = document.createElement("div");
     headerRow.className = "row header";
 
-    headers.forEach(header => {
-
+    headers.forEach(h => {
         const div = document.createElement("div");
-        div.textContent = header;
+        div.textContent = h;
         headerRow.appendChild(div);
-
     });
 
     main.appendChild(headerRow);
 
-
-    const renderedRows = [];
-
     let rank = 1;
+    let rendered = [];
 
     for (let i = 0; i < bodyRows.length; i++) {
 
         const row = bodyRows[i];
 
         if (i > 0) {
+            const prev = bodyRows[i - 1];
 
-            const previous = bodyRows[i - 1];
+            const same =
+                Number(row[3]) === Number(prev[3]) &&
+                Number(row[4]) === Number(prev[4]);
 
-            const tied =
-                Number(row[3]) === Number(previous[3]) &&
-                Number(row[4]) === Number(previous[4]);
-
-            if (!tied) {
-                rank = i + 1;
-            }
+            if (!same) rank = i + 1;
         }
 
-        const previousTie =
-            i > 0 &&
+        const tied =
+            (i > 0 &&
             Number(row[3]) === Number(bodyRows[i - 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i - 1][4]);
-
-        const nextTie =
-            i < bodyRows.length - 1 &&
+            Number(row[4]) === Number(bodyRows[i - 1][4])) ||
+            (i < bodyRows.length - 1 &&
             Number(row[3]) === Number(bodyRows[i + 1][3]) &&
-            Number(row[4]) === Number(bodyRows[i + 1][4]);
+            Number(row[4]) === Number(bodyRows[i + 1][4]));
 
-        const rankLabel =
-            (previousTie || nextTie)
-                ? "=" + rank
-                : rank;
+        const label = tied ? "=" + rank : rank;
 
-        const rowDiv = document.createElement("div");
-        rowDiv.className = "row";
+        const divRow = document.createElement("div");
+        divRow.className = "row";
 
-        if (rank === 1) rowDiv.classList.add("top1");
-        if (rank === 2) rowDiv.classList.add("top2");
-        if (rank === 3) rowDiv.classList.add("top3");
+        if (rank === 1) divRow.classList.add("top1");
+        if (rank === 2) divRow.classList.add("top2");
+        if (rank === 3) divRow.classList.add("top3");
 
-        const displayRow = [rankLabel, ...row.slice(1)];
+        const full = [label, ...row.slice(1)];
 
-        displayRow.forEach((cell, columnIndex) => {
-        
+        full.forEach((cell, i) => {
+
             const div = document.createElement("div");
-        
-            // Matches Played
-            if (columnIndex === 2) {
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
-            }
-        
-            // Points
-            else if (columnIndex === 3) {
-        
+
+            if (i === 3) {
                 div.classList.add("points");
-        
-                div.dataset.target = Number(cell);
-                div.textContent = "0";
-        
-            }
-        
-            // Game Differential
-            else if (columnIndex === 4) {
-        
-                div.classList.add("diff");
-        
-                const value = Number(cell);
-        
-                if (value > 0) {
-                    div.classList.add("positive");
-                }
-                else if (value < 0) {
-                    div.classList.add("negative");
-                }
-                else {
-                    div.classList.add("neutral");
-                }
-        
-                div.dataset.target = value;
-                div.dataset.diff = "true";
-                div.textContent = "0";
-        
-            }
-        
-            // Place + Player
-            else {
-        
                 div.textContent = cell;
-        
             }
-        
-            rowDiv.appendChild(div);
-        
+
+            else if (i === 4) {
+                div.classList.add("diff");
+
+                const v = Number(cell);
+
+                if (v > 0) div.classList.add("positive");
+                else if (v < 0) div.classList.add("negative");
+                else div.classList.add("neutral");
+
+                div.textContent = v > 0 ? "+" + v : v;
+            }
+
+            else {
+                div.textContent = cell;
+            }
+
+            divRow.appendChild(div);
         });
 
-        renderedRows.push(rowDiv);
-
-
-
+        rendered.push(divRow);
     }
 
     const elimCount = 3;
 
-    const mainRows = renderedRows.slice(0, -elimCount);
-    const elimRows = renderedRows.slice(-elimCount);
+    const mainRows = rendered.slice(0, -elimCount);
+    const elimRows = rendered.slice(-elimCount);
 
-    mainRows.forEach(row => {
-        main.appendChild(row);
+    mainRows.forEach(r => main.appendChild(r));
+
+    const title = document.createElement("div");
+    title.className = "zone-title";
+    title.textContent = "🔻 Stage 1 Elimination Zone";
+    elimZone.appendChild(title);
+
+    elimRows.forEach(r => {
+        r.classList.add("elim");
+        elimZone.appendChild(r);
     });
+}
 
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone";
+// ---------------- RUN ----------------
+async function init() {
 
-    elimZone.appendChild(zoneTitle);
+    const leaderboardData = await fetchCSV(baseUrl);
+    renderLeaderboard(leaderboardData);
 
-    elimRows.forEach(row => {
+    const recentData = await fetchCSV(recentUrl);
+    renderRecent(recentData);
 
-        row.classList.add("elim");
-        elimZone.appendChild(row);
+    const upcomingData = await fetchCSV(upcomingUrl);
+    renderUpcoming(upcomingData);
+}
 
-    });
+init();
 
-    animateWaterfall();
-
-});
 </script>
 
 </body>
