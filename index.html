@@ -267,29 +267,71 @@
 
         @media (max-width: 1000px) {
         
-            /* Stack layout vertically */
+            /* Stack main layout */
             .layout {
                 flex-direction: column;
                 gap: 20px;
+                padding: 20px;
             }
         
-            /* Standings first */
+            /* Standings always on top */
             .container {
-                order: 1;
                 width: 100%;
             }
         
-            /* Sidebars below standings */
+            /* Put both sidebars into a 2-column grid */
+            .sidebar,
+            .sidebar-right {
+                width: 100% !important;
+            }
+        
+            /* Make a row layout for the two side panels */
+            .sidebar {
+                margin-bottom: 0;
+            }
+        
+            /* Wrap both side sections visually */
+            body {
+                overflow-x: hidden;
+            }
+        
+            /* Turn layout into structured mobile flow */
+            .layout {
+                display: flex;
+                flex-direction: column;
+            }
+        
+            /* Create side-by-side effect using grid on a wrapper illusion */
             .sidebar {
                 order: 2;
-                width: 100%;
             }
         
             .sidebar-right {
-                order: 3;
-                width: 100%;
+                order: 2;
             }
         
+            /* This is the key part: make them sit side by side */
+            .sidebar,
+            .sidebar-right {
+                width: 50% !important;
+            }
+        
+            /* Force them into a row */
+            .layout {
+                align-items: stretch;
+            }
+        
+            /* Put sidebars in same row */
+            .sidebar,
+            .sidebar-right {
+                display: inline-block;
+                vertical-align: top;
+            }
+        
+            /* Ensure container sits above */
+            .container {
+                order: 1;
+            }
         }
 
     </style>
