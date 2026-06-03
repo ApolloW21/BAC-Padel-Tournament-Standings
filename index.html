@@ -108,6 +108,28 @@
         .gain-pos { color: #16a34a; }
         .gain-neg { color: #dc2626; }
 
+        .trophy-left,
+        .trophy-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .trophy-left {
+            grid-column: 1;
+            grid-row: 2;
+            justify-self: end;
+            margin-right: 8px;
+        }
+        
+        .trophy-right {
+            grid-column: 3;
+            grid-row: 2;
+            justify-self: start;
+            margin-left: 8px;
+        }
+
         /* MAIN CONTENT */
         .container {
             width: 100%;
@@ -317,16 +339,27 @@ fetch(matchesUrl)
         const gain1 = Number(row[9]);
         const gain2 = Number(row[10]);
 
+        const trophyLeft = gain1 > gain2
+            ? '<div class="trophy-left">🏆</div>'
+            : '';
+        
+        const trophyRight = gain2 > gain1
+            ? '<div class="trophy-right">🏆</div>'
+            : '';
+        
         card.innerHTML = `
             <div class="match-meta">${row[4]} • ${row[5]}</div>
         
             <div class="team-left">
                 ${row[0]}<br>${row[1]}
             </div>
-            
+        
             <div class="team-right">
                 ${row[2]}<br>${row[3]}
             </div>
+        
+            ${trophyLeft}
+            ${trophyRight}
         
             <div class="match-score">
                 <div class="set">${row[6]}</div>
