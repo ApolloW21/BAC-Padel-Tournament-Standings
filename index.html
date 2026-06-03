@@ -265,6 +265,55 @@
             gap: 12px;
         }
 
+        @media (max-width: 1000px) {
+        
+            body {
+                padding: 20px;
+            }
+        
+            .layout {
+                flex-direction: column;
+                gap: 30px;
+                max-width: 100%;
+            }
+        
+            .container {
+                order: 1;
+                max-width: 100%;
+            }
+        
+            .sidebar-right {
+                order: 2;
+                width: 100%;
+            }
+        
+            .sidebar {
+                order: 3;
+                width: 100%;
+            }
+        
+            .sidebar,
+            .sidebar-right {
+                align-items: stretch;
+            }
+        
+            /* Make cards feel better on small screens */
+            .match-card,
+            .upcoming-card {
+                width: 100%;
+            }
+        
+            /* Slightly reduce huge spacing */
+            h1 {
+                font-size: 26px;
+            }
+        
+            .sidebar h2,
+            .sidebar-right h2 {
+                font-size: 18px;
+            }
+        }
+
     </style>
 </head>
 
