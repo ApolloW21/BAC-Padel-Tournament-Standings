@@ -411,18 +411,9 @@ fetch(matchesUrl)
             </div>
         `;
 
-        card.classList.add("row"); 
         container.appendChild(card);
 
     });
-
-    setTimeout(() => {
-        document.querySelectorAll("#matches .row").forEach((el, i) => {
-            setTimeout(() => {
-                el.classList.add("animate-in");
-            }, i * 80);
-        });
-    }, 100);
 
 });
 
@@ -481,18 +472,9 @@ fetch(upcomingUrl)
             </div>
         `;
 
-        card.classList.add("row");
         container.appendChild(card);
 
     });
-
-    setTimeout(() => {
-        document.querySelectorAll("#upcoming .row").forEach((el, i) => {
-            setTimeout(() => {
-                el.classList.add("animate-in");
-            }, i * 80);
-        });
-    }, 100);
 
 });
     
