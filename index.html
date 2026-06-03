@@ -309,27 +309,23 @@ fetch(matchesUrl)
         const card = document.createElement("div");
         card.className = "match-card";
 
+        const team1 = `${row[0]} & ${row[1]}`;
+        const team2 = `${row[2]} & ${row[3]}`;
+        
+        const score = `${row[6]} - ${row[7]} - ${row[8]}`;
+        
         const gain1 = Number(row[9]);
         const gain2 = Number(row[10]);
-        
-        const trophy1 = gain1 > gain2 ? " 🏆" : "";
-        const trophy2 = gain2 > gain1 ? " 🏆" : "";
-        
-        const team1 =
-        `${row[0]}<br>${row[1]}${trophy1}`;
-        
-        const team2 =
-        `${row[2]}<br>${row[3]}${trophy2}`;
 
         card.innerHTML = `
             <div class="match-meta">${row[4]} • ${row[5]}</div>
         
             <div class="team-left">
-                ${team1}
+                ${row[0]}<br>${row[1]}
             </div>
             
             <div class="team-right">
-                ${team2}
+                ${row[2]}<br>${row[3]}
             </div>
         
             <div class="match-score">
