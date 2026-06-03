@@ -265,54 +265,6 @@
             gap: 12px;
         }
 
-        @media (max-width: 1000px) {
-        
-            /* Stack main layout vertically */
-            .layout {
-                flex-direction: column;
-                gap: 20px;
-                padding: 20px;
-                max-width: 100%;
-            }
-        
-            /* Make all sections full width */
-            .container,
-            .sidebar,
-            .sidebar-right {
-                width: 100% !important;
-            }
-        
-            /* Put recent + upcoming side by side */
-            .sidebar,
-            .sidebar-right {
-                flex-direction: column;
-            }
-        
-            /* Wrap the two sidebars into a row-like layout */
-            .layout {
-                align-items: stretch;
-            }
-        
-            /* Create a mobile row for side panels */
-            .sidebar,
-            .sidebar-right {
-                flex: 1;
-            }
-        
-            /* NEW: side-by-side container behaviour */
-            .sidebar,
-            .sidebar-right {
-                display: flex;
-            }
-        
-            /* Force side-by-side card layout container */
-            .sidebar-wrapper {
-                display: flex;
-                gap: 12px;
-            }
-        
-        }
-
     </style>
 </head>
 
@@ -320,20 +272,23 @@
 
 <div class="layout">
 
-    <div class="sidebar-wrapper">
-    
-        <!-- LEFT SIDEBAR -->
-        <div class="sidebar">
-            <h2>📊 Recent Matches</h2>
-            <div id="matches"></div>
-        </div>
-    
-        <!-- RIGHT SIDEBAR -->
-        <div class="sidebar-right">
-            <h2>📆 Upcoming Matches</h2>
-            <div id="upcoming"></div>
-        </div>
-    
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <h2>📊 Recent Matches</h2>
+        <div id="matches"></div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="container">
+        <h1>BAC Padel Tournament Standings</h1>
+        <div id="main" class="leaderboard"></div>
+        <div id="elim-zone" class="leaderboard"></div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar-right">
+        <h2>📆 Upcoming Matches</h2>
+        <div id="upcoming"></div>
     </div>
 
 </div>
