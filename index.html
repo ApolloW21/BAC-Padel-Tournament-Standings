@@ -267,39 +267,54 @@
 
         @media (max-width: 900px) {
         
+            body {
+                padding: 10px;
+            }
+        
             .layout {
                 flex-direction: column;
                 gap: 20px;
                 max-width: 100%;
-                padding: 10px;
+                padding: 0;
             }
         
-            /* order: standings first */
+            /* IMPORTANT: allow children to actually fill width */
+            .container,
+            .sidebar,
+            .sidebar-right {
+                width: 100% !important;
+            }
+        
+            /* ordering */
             .container {
                 order: 1;
-                max-width: 100%;
             }
         
-            /* upcoming matches second */
             .sidebar-right {
                 order: 2;
-                width: 100%;
             }
         
-            /* recent matches last */
             .sidebar {
                 order: 3;
-                width: 100%;
             }
         
-            /* make cards easier to read on mobile */
+            /* headings scale */
+            h1 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+        
+            /* make sure cards actually show fully */
+            .row,
             .match-card,
             .upcoming-card {
                 width: 100%;
+                box-sizing: border-box;
             }
         
-            h1 {
-                font-size: 24px;
+            /* reduce horizontal padding inside cards slightly */
+            .row {
+                padding: 12px;
             }
         }
 
