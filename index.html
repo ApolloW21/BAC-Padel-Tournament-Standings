@@ -374,57 +374,46 @@ fetch(matchesUrl)
     const body = rows.slice(1);
 
     const container = document.getElementById("matches");
-    
-    if (!body || body.length === 0) {
-    
-        const empty = document.createElement("div");
-        empty.className = "match-card";
-        empty.style.textAlign = "center";
-        empty.style.color = "#6b7280";
-        empty.textContent = "No recent matches";
-    
-        container.appendChild(empty);
-    
-    } else {
-    
-        body.forEach(row => {
-    
-            if (!row || row.length < 8) return;
-    
-            const card = document.createElement("div");
-            card.className = "match-card";
-    
-            const gain1 = Number(row[9]) || 0;
-            const gain2 = Number(row[10]) || 0;
-    
-            card.innerHTML = `
-                <div class="match-meta">${row[4]} • ${row[5]}</div>
-    
-                <div class="team-left">
-                    ${row[0]}<br>${row[1]}
-                </div>
-    
-                <div class="team-right">
-                    ${row[2]}<br>${row[3]}
-                </div>
-    
-                <div class="match-score">
-                    <div class="set">${row[6]}</div>
-                    <div class="set">${row[7]}</div>
-                    <div class="set">${row[8]}</div>
-                </div>
-    
-                <div class="points-gain">
-                    <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
-                    <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
-                </div>
-            `;
-    
-            container.appendChild(card);
-    
-        });
-    
-    }
+
+    body.forEach(row => {
+
+        const card = document.createElement("div");
+        card.className = "match-card";
+
+        const team1 = `${row[0]} & ${row[1]}`;
+        const team2 = `${row[2]} & ${row[3]}`;
+        
+        const score = `${row[6]} - ${row[7]} - ${row[8]}`;
+        
+        const gain1 = Number(row[9]);
+        const gain2 = Number(row[10]);
+
+        card.innerHTML = `
+            <div class="match-meta">${row[4]} • ${row[5]}</div>
+        
+            <div class="team-left">
+                ${row[0]}<br>${row[1]}
+            </div>
+            
+            <div class="team-right">
+                ${row[2]}<br>${row[3]}
+            </div>
+        
+            <div class="match-score">
+                <div class="set">${row[6]}</div>
+                <div class="set">${row[7]}</div>
+                <div class="set">${row[8]}</div>
+            </div>
+        
+            <div class="points-gain">
+                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
+                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
+            </div>
+        `;
+
+        container.appendChild(card);
+
+    });
 
 });
 
@@ -438,45 +427,54 @@ fetch(upcomingUrl)
     const body = rows.slice(1);
 
     const container = document.getElementById("upcoming");
-    
-    if (!body || body.length === 0) {
-    
-        const empty = document.createElement("div");
-        empty.className = "upcoming-card";
-        empty.style.textAlign = "center";
-        empty.style.color = "#6b7280";
-        empty.textContent = "No upcoming matches";
-    
-        container.appendChild(empty);
-    
-    } else {
-    
-        body.forEach(row => {
-    
-            if (!row || row.length < 7) return;
-    
-            const card = document.createElement("div");
-            card.className = "upcoming-card";
-    
-            card.innerHTML = `
-                <div class="upcoming-week">Week ${row[0]}</div>
-    
-                <div class="upcoming-teams">
-                    ${row[1]} & ${row[2]} <br>
-                    vs <br>
-                    ${row[3]} & ${row[4]}
-                </div>
-    
-                <div class="upcoming-meta">
-                    ${row[5] || "TBD"} • ${row[6] || ""}${row[7] ? " - " + row[7] : ""}
-                </div>
-            `;
-    
-            container.appendChild(card);
-    
-        });
-    
-    }
+
+    body.forEach(row => {
+
+        const card = document.createElement("div");
+        card.className = "upcoming-card";
+
+        const team1 = `${row[1]} & ${row[2]}`;
+        const team2 = `${row[3]} & ${row[4]}`;
+
+        const date = row[5]?.trim();
+        const start = row[6]?.trim();
+        const end = row[7]?.trim();
+        
+        let timeText;
+        
+        if (!date && !start && !end) {
+            timeText = "TBD";
+        }
+        else if (!date && !start && !end) {
+            timeText = "TBD";
+        }
+        else if (!date && !start && end) {
+            timeText = `TBD • Ends ${end}`;
+        }
+        else if (!date && start && !end) {
+            timeText = `TBD • ${start}`;
+        }
+        else {
+            timeText = `${date || "TBD"} • ${start || ""}${end ? " - " + end : ""}`;
+        }
+
+        card.innerHTML = `
+            <div class="upcoming-week">Week ${row[0]}</div>
+
+            <div class="upcoming-teams">
+                ${row[1]} & ${row[2]} <br>
+                vs <br>
+                ${row[3]} & ${row[4]}
+            </div>
+
+            <div class="upcoming-meta">
+                ${timeText}
+            </div>
+        `;
+
+        container.appendChild(card);
+
+    });
 
 });
     
