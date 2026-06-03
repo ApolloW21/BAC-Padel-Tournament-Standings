@@ -31,49 +31,6 @@
             gap: 12px;
         }
 
-        .sidebar-right {
-            width: 320px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .sidebar-right h2 {
-            text-align: center;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        /* Upcoming cards slightly different styling */
-        .upcoming-card {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 14px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-            font-size: 13px;
-        }
-        
-        .upcoming-week {
-            font-weight: bold;
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 6px;
-        }
-        
-        .upcoming-teams {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-        
-        .upcoming-meta {
-            font-size: 12px;
-            color: #6b7280;
-            text-align: center;
-        }
-
         .sidebar h2 {
             text-align: center;
             font-size: 20px;
@@ -258,15 +215,12 @@
 
     <!-- MAIN -->
     <div class="container">
+
         <h1>BAC Padel Tournament Standings</h1>
+
         <div id="main" class="leaderboard"></div>
         <div id="elim-zone" class="leaderboard"></div>
-    </div>
 
-    <!-- RIGHT SIDEBAR -->
-    <div class="sidebar-right">
-        <h2>📆 Upcoming Matches</h2>
-        <div id="upcoming"></div>
     </div>
 
 </div>
@@ -279,9 +233,6 @@ const baseUrl =
 const matchesUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=255620112&single=true&output=csv";
 
-const upcomingUrl =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=1642789849&single=true&output=csv";
-    
 const csvUrl = baseUrl + "&_=" + Date.now();
 
 function animateValue(element, target, isDiff = false) {
@@ -341,7 +292,7 @@ function animateWaterfall() {
 
 }
 
-/* ---------------- RECENT MATCHES SIDEBAR ---------------- */
+/* ---------------- MATCHES SIDEBAR ---------------- */
 
 fetch(matchesUrl)
 .then(r => r.text())
@@ -367,55 +318,25 @@ fetch(matchesUrl)
         const gain2 = Number(row[10]);
 
         card.innerHTML = `
-            <div class="upcoming-week">Week ${row[0]}</div>
+            <div class="match-meta">${row[4]} • ${row[5]}</div>
         
-            <div class="upcoming-teams">
-                ${row[1]} ${row[2]} <br>
-                vs <br>
-                ${row[3]} ${row[4]}
+            <div class="team-left">
+                ${row[0]}<br>${row[1]}
+            </div>
+            
+            <div class="team-right">
+                ${row[2]}<br>${row[3]}
             </div>
         
-            <div class="upcoming-meta">
-                ${row[5]} • ${row[6]} - ${row[7]}
+            <div class="match-score">
+                <div class="set">${row[6]}</div>
+                <div class="set">${row[7]}</div>
+                <div class="set">${row[8]}</div>
             </div>
-        `;
-
-        container.appendChild(card);
-
-    });
-
-});
-
-/* ---------------- UPCOMING MATCHES SIDEBAR ---------------- */
-
-fetch(upcomingUrl)
-.then(r => r.text())
-.then(data => {
-
-    const rows = data.trim().split("\n").map(r => r.split(","));
-    const body = rows.slice(1);
-
-    const container = document.getElementById("upcoming");
-
-    body.forEach(row => {
-
-        const card = document.createElement("div");
-        card.className = "upcoming-card";
-
-        const team1 = `${row[1]} & ${row[2]}`;
-        const team2 = `${row[3]} & ${row[4]}`;
-
-        card.innerHTML = `
-            <div class="upcoming-week">Week ${row[0]}</div>
-
-            <div class="upcoming-teams">
-                ${row[1]} ${row[2]} <br>
-                vs <br>
-                ${row[3]} ${row[4]}
-            </div>
-
-            <div class="upcoming-meta">
-                ${row[5]} • ${row[6]} - ${row[7]}
+        
+            <div class="points-gain">
+                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
+                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
             </div>
         `;
 
