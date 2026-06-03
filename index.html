@@ -39,33 +39,72 @@
 
         .match-card {
             background: white;
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 14px;
+            padding: 14px 16px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             font-size: 13px;
-            line-height: 1.4;
+        
+            display: grid;
+            grid-template-columns: 1fr 120px 1fr;
+            grid-template-rows: auto auto auto;
+            column-gap: 10px;
+            row-gap: 6px;
+            align-items: center;
         }
-
-        .match-teams {
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
+        
+        /* Date / time spans full width at top */
         .match-meta {
+            grid-column: 1 / 4;
+            text-align: center;
+            font-size: 11px;
             color: #6b7280;
-            font-size: 12px;
-            margin-bottom: 6px;
+            margin-bottom: 2px;
         }
-
-        .match-score {
+        
+        /* Team names */
+        .team-left {
+            grid-column: 1;
+            grid-row: 2;
             font-weight: bold;
-            margin-bottom: 6px;
+            font-size: 14px;
+            text-align: left;
         }
-
-        .points-gain {
+        
+        .team-right {
+            grid-column: 3;
+            grid-row: 2;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: right;
+        }
+        
+        /* Score column (middle stacked) */
+        .match-score {
+            grid-column: 2;
+            grid-row: 2 / 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-weight: bold;
+        }
+        
+        /* Each set */
+        .set {
             font-size: 12px;
+            padding: 2px 0;
         }
-
+        
+        /* Points gain row at bottom */
+        .points-gain {
+            grid-column: 1 / 4;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
         .gain-pos { color: #16a34a; }
         .gain-neg { color: #dc2626; }
 
@@ -279,14 +318,20 @@ fetch(matchesUrl)
         const gain2 = Number(row[10]);
 
         card.innerHTML = `
-            <div class="match-teams">${team1} vs ${team2}</div>
             <div class="match-meta">${row[4]} • ${row[5]}</div>
-            <div class="match-score">Sets: ${score}</div>
+        
+            <div class="team-left">${team1}</div>
+            <div class="team-right">${team2}</div>
+        
+            <div class="match-score">
+                <div class="set">${row[6]}</div>
+                <div class="set">${row[7]}</div>
+                <div class="set">${row[8]}</div>
+            </div>
+        
             <div class="points-gain">
-                ${team1}: <span class="${gain1 >= 0 ? 'gain-pos' : 'gain-neg'}">
-                ${gain1 >= 0 ? '+' : ''}${gain1}</span><br>
-                ${team2}: <span class="${gain2 >= 0 ? 'gain-pos' : 'gain-neg'}">
-                ${gain2 >= 0 ? '+' : ''}${gain2}</span>
+                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
+                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
             </div>
         `;
 
