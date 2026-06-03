@@ -265,6 +265,44 @@
             gap: 12px;
         }
 
+        @media (max-width: 900px) {
+        
+            .layout {
+                flex-direction: column;
+                gap: 20px;
+                max-width: 100%;
+                padding: 10px;
+            }
+        
+            /* order: standings first */
+            .container {
+                order: 1;
+                max-width: 100%;
+            }
+        
+            /* upcoming matches second */
+            .sidebar-right {
+                order: 2;
+                width: 100%;
+            }
+        
+            /* recent matches last */
+            .sidebar {
+                order: 3;
+                width: 100%;
+            }
+        
+            /* make cards easier to read on mobile */
+            .match-card,
+            .upcoming-card {
+                width: 100%;
+            }
+        
+            h1 {
+                font-size: 24px;
+            }
+        }
+
     </style>
 </head>
 
