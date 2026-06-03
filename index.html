@@ -65,7 +65,7 @@
         
         .upcoming-week {
             grid-column: 1 / 4;
-            text-align: center;
+            text-align: left;
             font-size: 14px;
             color: #6b7280;
         }
@@ -426,6 +426,28 @@ fetch(upcomingUrl)
         const team1 = `${row[1]} & ${row[2]}`;
         const team2 = `${row[3]} & ${row[4]}`;
 
+        const date = row[5]?.trim();
+        const start = row[6]?.trim();
+        const end = row[7]?.trim();
+        
+        let timeText;
+        
+        if (!date && !start && !end) {
+            timeText = "TBD";
+        }
+        else if (!date && !start && !end) {
+            timeText = "TBD";
+        }
+        else if (!date && !start && end) {
+            timeText = `TBD • Ends ${end}`;
+        }
+        else if (!date && start && !end) {
+            timeText = `TBD • ${start}`;
+        }
+        else {
+            timeText = `${date || "TBD"} • ${start || ""}${end ? " - " + end : ""}`;
+        }
+
         card.innerHTML = `
             <div class="upcoming-week">Week ${row[0]}</div>
 
@@ -436,7 +458,7 @@ fetch(upcomingUrl)
             </div>
 
             <div class="upcoming-meta">
-                ${row[5]} • ${row[6]} - ${row[7]}
+                ${timeText}
             </div>
         `;
 
