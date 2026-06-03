@@ -265,59 +265,6 @@
             gap: 12px;
         }
 
-        @media (max-width: 900px) {
-        
-            body {
-                padding: 10px;
-            }
-        
-            .layout {
-                flex-direction: column;
-                gap: 20px;
-                max-width: 100%;
-                padding: 0;
-            }
-        
-            /* IMPORTANT: allow children to actually fill width */
-            .container,
-            .sidebar,
-            .sidebar-right {
-                width: 100% !important;
-            }
-        
-            /* ordering */
-            .container {
-                order: 1;
-            }
-        
-            .sidebar-right {
-                order: 2;
-            }
-        
-            .sidebar {
-                order: 3;
-            }
-        
-            /* headings scale */
-            h1 {
-                font-size: 22px;
-                margin-bottom: 20px;
-            }
-        
-            /* make sure cards actually show fully */
-            .row,
-            .match-card,
-            .upcoming-card {
-                width: 100%;
-                box-sizing: border-box;
-            }
-        
-            /* reduce horizontal padding inside cards slightly */
-            .row {
-                padding: 12px;
-            }
-        }
-
     </style>
 </head>
 
