@@ -269,32 +269,43 @@
         @media (max-width: 1100px) {
         
             .layout {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 20px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-areas:
+                    "main main"
+                    "left right";
+                gap: 16px;
+                width: 100%;
+                padding-top: 10px;
+                justify-items: center;
             }
         
-            /* Make standings full width */
+            /* Standings full width */
             .container {
+                grid-area: main;
                 width: 100%;
-                max-width: 900px;
+                max-width: none;
             }
         
-            /* Sidebars become full width blocks */
-            .sidebar,
+            /* Sidebars side-by-side */
+            .sidebar {
+                grid-area: left;
+                width: 100%;
+                max-width: none;
+            }
+        
             .sidebar-right {
+                grid-area: right;
                 width: 100%;
-                max-width: 600px;   /* keeps cards readable */
-                flex: unset;
+                max-width: none;
             }
         
-            /* Optional: reduce header size on mobile */
-            h1 {
-                font-size: 26px;
+            /* Optional: tighten cards a bit for mobile */
+            .match-card,
+            .upcoming-card {
+                font-size: 12px;
             }
         
-            /* Optional: reduce padding on body */
             body {
                 padding: 20px;
             }
