@@ -20,39 +20,38 @@
 
         /* NEW: layout wrapper */
         .layout {
-            display: grid;
-        
-            grid-template-columns:
-                1fr
-                450px
-                50%
-                450px
-                1fr;
-        
-            column-gap: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
         
             width: 100%;
-            align-items: start;
             padding-top: 10px;
         }
 
         /* LEFT SIDEBAR */
-        .sidebar {
-            grid-column: 2;
-            justify-self: center;
+        .sidebar,
+        .sidebar-right {
+            width: 420px;
+            flex: 0 0 420px;
         
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
         
-        .sidebar-right {
-            grid-column: 4;
-            justify-self: center;
+        .container {
+            width: 50vw;
+            max-width: 900px;
+            min-width: 600px;
+        }
+
+        .sidebar {
+            margin-left: auto;
+        }
         
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .sidebar-right {
+            margin-right: auto;
         }
         
         .sidebar-right h2 {
@@ -178,12 +177,6 @@
         .gain-neg { color: #dc2626; }
 
         /* MAIN CONTENT */
-        .container {
-            grid-column: 3;
-            width: 100%;
-            justify-self: center;
-        }
-
         h1 {
             text-align: center;
             margin: 0 0 30px 0;
