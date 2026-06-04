@@ -24,10 +24,12 @@
         
             grid-template-columns:
                 1fr
-                auto
-                minmax(0, 50%)
-                auto
+                420px
+                minmax(600px, 50vw)
+                420px
                 1fr;
+        
+            column-gap: 40px;
         
             width: 100%;
             align-items: start;
@@ -35,22 +37,31 @@
         }
 
         /* LEFT SIDEBAR */
-        .sidebar,
-        .sidebar-right {
+        .sidebar {
+            grid-column: 2;
+            justify-self: end;
+        
             width: 420px;
-            flex: 0 0 420px;
         
             display: flex;
             flex-direction: column;
             gap: 12px;
+        }
         
-            justify-self: center;
+        .sidebar-right {
+            grid-column: 4;
+            justify-self: start;
+        
+            width: 420px;
+        
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         
         .container {
-            width: 50vw;
-            max-width: 900px;
-            min-width: 600px;
+            grid-column: 3;
+            width: 100%;
         }
 
         .sidebar {
@@ -65,15 +76,7 @@
         .sidebar-right {
             grid-column: 4;
         }
-/*
-        .sidebar {
-            margin-left: auto;
-        }
-        
-        .sidebar-right {
-            margin-right: auto;
-        }
-*/
+
         .sidebar-right h2 {
             text-align: center;
             font-size: 20px;
