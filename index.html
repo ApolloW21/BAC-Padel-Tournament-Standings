@@ -264,6 +264,42 @@
             gap: 12px;
         }
 
+        /* ---------------- MOBILE LAYOUT ---------------- */
+        
+        @media (max-width: 1100px) {
+        
+            .layout {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+        
+            /* Make standings full width */
+            .container {
+                width: 100%;
+                max-width: 900px;
+            }
+        
+            /* Sidebars become full width blocks */
+            .sidebar,
+            .sidebar-right {
+                width: 100%;
+                max-width: 600px;   /* keeps cards readable */
+                flex: unset;
+            }
+        
+            /* Optional: reduce header size on mobile */
+            h1 {
+                font-size: 26px;
+            }
+        
+            /* Optional: reduce padding on body */
+            body {
+                padding: 20px;
+            }
+        }
+
     </style>
 </head>
 
