@@ -472,15 +472,8 @@ fetch(matchesUrl)
             </div>
         
             <div class="points-gain">
-                <div>
-                    ${gain1 > gain2 ? '🏆 ' : ''}
-                    ${gain1 >= 0 ? '+' : ''}${gain1}
-                </div>
-            
-                <div>
-                    ${gain2 > gain1 ? '🏆 ' : ''}
-                    ${gain2 >= 0 ? '+' : ''}${gain2}
-                </div>
+                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
+                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
             </div>
         `;
 
