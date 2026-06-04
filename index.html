@@ -23,20 +23,23 @@
             display: grid;
         
             grid-template-columns:
-                minmax(0, 1fr)
+                1fr
                 450px
                 50%
                 450px
-                minmax(0, 1fr);
+                1fr;
         
-            align-items: start;
+            column-gap: 40px;
+        
             width: 100%;
+            align-items: start;
             padding-top: 10px;
         }
 
         /* LEFT SIDEBAR */
         .sidebar {
             grid-column: 2;
+            justify-self: center;
         
             display: flex;
             flex-direction: column;
@@ -45,6 +48,7 @@
         
         .sidebar-right {
             grid-column: 4;
+            justify-self: center;
         
             display: flex;
             flex-direction: column;
@@ -177,6 +181,7 @@
         .container {
             grid-column: 3;
             width: 100%;
+            justify-self: center;
         }
 
         h1 {
