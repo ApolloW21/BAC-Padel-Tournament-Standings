@@ -20,36 +20,48 @@
 
         /* NEW: layout wrapper */
         .layout {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            display: grid;
+        
+            grid-template-columns:
+                1fr
+                300px
+                minmax(524px, 50vw)
+                300px
+                1fr;
+        
+            column-gap: 40px;
         
             width: 100%;
+            align-items: start;
             padding-top: 10px;
         }
 
         /* LEFT SIDEBAR */
-        .sidebar,
-        .sidebar-right {
-            width: 420px;
-            flex: 0 0 420px;
+        .sidebar {
+            grid-column: 2;
+            justify-self: end;
+        
+            width: 300px;
         
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-
-        .sidebar {
-            margin-right: auto;
-        }
         
         .sidebar-right {
-            margin-left: auto;
+            grid-column: 4;
+            justify-self: start;
+        
+            width: 300px;
+        
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         
         .container {
-            width: 50vw;
-            min-width: 524px;
+            grid-column: 3;
+            width: 100%;
         }
 
         .sidebar {
