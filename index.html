@@ -5,6 +5,10 @@
     <title>BAC Padel Tournament Standings</title>
 
     <style>
+        :root {
+            --match-name-offset: 0px;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             background: #f6f7fb;
@@ -148,7 +152,7 @@
             flex-direction: column;
             justify-content: center;
         
-            transform: translateY(var(100px));
+            transform: translateY(var(--match-name-offset));
         }
         
         /* Score column */
