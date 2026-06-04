@@ -24,13 +24,13 @@
             justify-content: center;
             align-items: flex-start;
         
-            gap: 10px;
+            gap: 40px;
         
             width: 100%;
             padding-top: 10px;
         }
-
-        /* LEFT SIDEBAR */
+        
+        /* SIDE COLUMNS */
         .sidebar,
         .sidebar-right {
             width: 300px;
@@ -41,23 +41,11 @@
             gap: 12px;
         }
         
+        /* CENTRE COLUMN = TRUE 50% */
         .container {
-            width: 50vw;
+            flex: 0 0 50vw;
+            max-width: 900px;
             min-width: 524px;
-            transition: width 0.2s ease;
-        }
-
-        .sidebar {
-            grid-column: 2;
-        }
-        
-        .container {
-            grid-column: 3;
-            width: 100%;
-        }
-        
-        .sidebar-right {
-            grid-column: 4;
         }
 
         .sidebar-right h2 {
