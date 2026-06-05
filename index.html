@@ -490,9 +490,19 @@ fetch(matchesUrl)
             </div>
         
             <div class="match-score">
-                <div class="set" data-target="${row[6]}">0</div>
-                <div class="set" data-target="${row[7]}">0</div>
-                <div class="set" data-target="${row[8]}">0</div>
+            
+                ${row[6].includes('-') ? `
+                    ${renderSet(row[6])}
+                ` : `<div class="set">${row[6]}</div>`}
+            
+                ${row[7].includes('-') ? `
+                    ${renderSet(row[7])}
+                ` : `<div class="set">${row[7]}</div>`}
+            
+                ${row[8].includes('-') ? `
+                    ${renderSet(row[8])}
+                ` : `<div class="set">${row[8]}</div>`}
+            
             </div>
         
             <div class="points-gain">
@@ -508,7 +518,28 @@ fetch(matchesUrl)
 });
 
 /* ---------------- UPCOMING MATCHES SIDEBAR ---------------- */
-    
+function renderSet(value) {
+
+    const parts = value.split("-");
+
+    const a = parts[0].trim();
+    const b = parts[1].trim();
+
+    const isNumeric = !isNaN(a) && !isNaN(b);
+
+    // if not numeric (e.g. x-x), just return static
+    if (!isNumeric) {
+        return `<div class="set">${value}</div>`;
+    }
+
+    return `
+        <div class="set">
+            <span data-target="${a}">0</span>-
+            <span data-target="${b}">0</span>
+        </div>
+    `;
+}
+
 fetch(upcomingUrl)
 .then(r => r.text())
 .then(data => {
