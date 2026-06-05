@@ -288,6 +288,22 @@
             animation: cardAppear 0.6s ease forwards;
         }
 
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -1;
+            opacity: 0;
+        }
+        
+        /* Start with first layer visible */
+        #bgA {
+            opacity: 1;
+        }
+
         @keyframes cardAppear {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -353,6 +369,9 @@
 
 <body>
 
+<div id="bgA" class="bg-layer"></div>
+<div id="bgB" class="bg-layer"></div>
+
 <div class="layout">
 
     <!-- LEFT SIDEBAR -->
@@ -392,6 +411,56 @@ const csvUrl = baseUrl + "&_=" + Date.now();
 const DRIVE_FOLDER_ID = "1h_YjmOIRE2whUVS84rVQtUhg7avaUPkx";
 const DRIVE_API_KEY = "AIzaSyCsn11LHClWrEas2gjeXNrGRkvRQmEtowc";
 
+let backgroundImages = [];
+let currentBgIndex = 0;
+let showingA = true;
+
+const bgA = document.getElementById("bgA");
+const bgB = document.getElementById("bgB");
+
+function preloadImages(urls) {
+    urls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+}
+
+function setNextBackground() {
+
+    if (!backgroundImages.length) return;
+
+    currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+    const nextImage = backgroundImages[currentBgIndex];
+
+    const activeLayer = showingA ? bgA : bgB;
+    const incomingLayer = showingA ? bgB : bgA;
+
+    incomingLayer.style.backgroundImage = `url('${nextImage}')`;
+
+    requestAnimationFrame(() => {
+        incomingLayer.style.opacity = 1;
+        activeLayer.style.opacity = 0;
+    });
+
+    showingA = !showingA;
+}
+
+async function initBackgrounds() {
+
+    backgroundImages = await loadDriveImages();
+
+    if (!backgroundImages.length) return;
+
+    preloadImages(backgroundImages);
+
+    // show first image immediately
+    bgB.style.opacity = 0;
+    bgA.style.backgroundImage = `url('${backgroundImages[0]}')`;
+    bgA.style.opacity = 1;
+
+    setInterval(setNextBackground, 15000);
+}
+
 async function loadDriveImages() {
 
     const url =
@@ -410,33 +479,6 @@ async function loadDriveImages() {
     return (data.files || [])
         .filter(f => f.mimeType && f.mimeType.startsWith("image/"))
         .map(f => `https://lh3.googleusercontent.com/d/${f.id}=w2000`);
-}
-
-let backgroundImages = [];
-
-function preloadImage(src) {
-    const img = new Image();
-    img.src = src;
-}
-
-function setRandomBackground() {
-
-    if (!backgroundImages.length) return;
-
-    const img = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
-
-    preloadImage(img);
-
-    document.body.style.transition = "background-image 1s ease-in-out";
-    document.body.style.backgroundImage = `url('${img}')`;
-}
-
-async function initBackgrounds() {
-
-    backgroundImages = await loadDriveImages();
-
-    setRandomBackground();
-    setInterval(setRandomBackground, 15000);
 }
 
 initBackgrounds();
