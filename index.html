@@ -267,7 +267,7 @@
             text-align: center;
             font-weight: bold;
             border-radius: 10px;
-            background: #ffb0b0;
+            background: #ffa0a0;
             color: #991b1b;
         }
 
@@ -293,7 +293,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 3s ease-in-out;
             z-index: -1;
             opacity: 0;
         }
@@ -457,7 +457,7 @@ async function initBackgrounds() {
     bgA.style.backgroundImage = `url('${backgroundImages[0]}')`;
     bgA.style.opacity = 1;
 
-    setInterval(setNextBackground, 15000);
+    setInterval(setNextBackground, 20000);
 }
 
 async function loadDriveImages() {
