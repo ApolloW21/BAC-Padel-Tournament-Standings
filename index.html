@@ -389,6 +389,48 @@ const upcomingUrl =
     
 const csvUrl = baseUrl + "&_=" + Date.now();
 
+const DRIVE_FOLDER_ID = "1h_YjmOIRE2whUVS84rVQtUhg7avaUPkx";
+const DRIVE_API_KEY = "AIzaSyCsn11LHClWrEas2gjeXNrGRkvRQmEtowc";
+
+async function loadDriveImages() {
+
+    const url =
+        `https://www.googleapis.com/drive/v3/files` +
+        `?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}` +
+        `&fields=files(id,name,mimeType)`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    return data.files
+        .filter(f => f.mimeType.startsWith("image/"))
+        .map(f => `https://drive.google.com/uc?id=${f.id}`);
+}
+
+let backgroundImages = [];
+
+function setRandomBackground() {
+
+    if (!backgroundImages.length) return;
+
+    const img = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+
+    document.body.style.backgroundImage = `url('${img}')`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+}
+
+async function initBackgrounds() {
+
+    backgroundImages = await loadDriveImages();
+
+    setRandomBackground();
+    setInterval(setRandomBackground, 15000);
+}
+
+initBackgrounds();
+
 function animateValue(element, target, isDiff = false) {
 
     const duration = 800;
