@@ -527,15 +527,14 @@ function renderSet(value) {
 
     const isNumeric = !isNaN(a) && !isNaN(b);
 
-    // if not numeric (e.g. x-x), just return static
+    // If not numeric (e.g. x-x), just display as-is
     if (!isNumeric) {
         return `<div class="set">${value}</div>`;
     }
 
     return `
         <div class="set">
-            <span data-target="${a}">0</span>-
-            <span data-target="${b}">0</span>
+            <span data-target="${a}">0</span> - <span data-target="${b}">0</span>
         </div>
     `;
 }
