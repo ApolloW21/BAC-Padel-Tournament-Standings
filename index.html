@@ -496,8 +496,8 @@ fetch(matchesUrl)
             </div>
         
             <div class="points-gain">
-                <div>${gain1 >= 0 ? '+' : ''}${gain1}</div>
-                <div>${gain2 >= 0 ? '+' : ''}${gain2}</div>
+                <div data-target="${gain1}" data-diff="true">0</div>
+                <div data-target="${gain2}" data-diff="true">0</div>
             </div>
         `;
 
@@ -706,12 +706,25 @@ fetch(csvUrl, { cache: "no-store" })
         const upcomingCards = document.querySelectorAll("#upcoming .sidebar-card");
     
         function animateGroup(cards) {
+    
             cards.forEach((card, index) => {
     
                 setTimeout(() => {
+    
                     card.style.transition = "all 0.6s ease";
                     card.style.opacity = "1";
                     card.style.transform = "translateY(0)";
+    
+                    // ✅ NEW: animate numbers inside this card
+                    card.querySelectorAll("[data-target]").forEach(el => {
+    
+                        const target = Number(el.dataset.target);
+                        const isDiff = el.dataset.diff === "true";
+    
+                        animateValue(el, target, isDiff);
+    
+                    });
+    
                 }, index * 120);
     
             });
