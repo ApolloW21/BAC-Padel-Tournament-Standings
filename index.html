@@ -293,9 +293,20 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            transition: opacity 3s ease-in-out;
-            z-index: -1;
+            z-index: -2;
+        
             opacity: 0;
+            transition: opacity 3.5s ease-in-out;
+        
+            transform: scale(1.05);
+        }
+        
+        /* dark overlay layer */
+        #bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: -1;
         }
         
         /* Start with first layer visible */
@@ -306,6 +317,15 @@
         @keyframes cardAppear {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slowZoom {
+            from {
+                transform: scale(1.05);
+            }
+            to {
+                transform: scale(1.15);
+            }
         }
 
         /* SPACING BETWEEN SIDEBAR CARDS */
@@ -370,6 +390,7 @@
 
 <div id="bgA" class="bg-layer"></div>
 <div id="bgB" class="bg-layer"></div>
+<div id="bg-overlay"></div>
 
 <div class="layout">
 
@@ -436,6 +457,11 @@ function setNextBackground() {
 
     incomingLayer.style.backgroundImage = `url('${nextImage}')`;
 
+    // reset animation so it restarts each swap
+    incomingLayer.style.animation = "none";
+    incomingLayer.offsetHeight; // force reflow
+    incomingLayer.style.animation = "slowZoom 30s linear infinite";
+
     requestAnimationFrame(() => {
         incomingLayer.style.opacity = 1;
         activeLayer.style.opacity = 0;
@@ -456,6 +482,7 @@ async function initBackgrounds() {
     bgB.style.opacity = 0;
     bgA.style.backgroundImage = `url('${backgroundImages[0]}')`;
     bgA.style.opacity = 1;
+    bgA.style.animation = "slowZoom 30s linear infinite";
 
     setInterval(setNextBackground, 20000);
 }
