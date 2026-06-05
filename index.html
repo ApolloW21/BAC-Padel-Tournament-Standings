@@ -396,15 +396,20 @@ async function loadDriveImages() {
 
     const url =
         `https://www.googleapis.com/drive/v3/files` +
-        `?q='${DRIVE_FOLDER_ID}'+in+parents&key=${DRIVE_API_KEY}` +
-        `&fields=files(id,name,mimeType)`;
+        `?q='${DRIVE_FOLDER_ID}'+in+parents` +
+        `&key=${DRIVE_API_KEY}` +
+        `&fields=files(id,name,mimeType)` +
+        `&supportsAllDrives=true` +
+        `&includeItemsFromAllDrives=true`;
 
     const res = await fetch(url);
     const data = await res.json();
 
-    return data.files
-        .filter(f => f.mimeType.startsWith("image/"))
-        .map(f => `https://drive.google.com/uc?id=${f.id}`);
+    console.log("Drive response:", data); // IMPORTANT DEBUG
+
+    return (data.files || [])
+        .filter(f => f.mimeType && f.mimeType.startsWith("image/"))
+        .map(f => `https://lh3.googleusercontent.com/d/${f.id}=w2000`);
 }
 
 let backgroundImages = [];
