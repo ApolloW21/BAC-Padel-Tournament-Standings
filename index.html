@@ -702,19 +702,23 @@ fetch(csvUrl, { cache: "no-store" })
 
     function animateSidebarCards() {
     
-        const cards = document.querySelectorAll(".sidebar-card");
+        const recentCards = document.querySelectorAll("#matches .sidebar-card");
+        const upcomingCards = document.querySelectorAll("#upcoming .sidebar-card");
     
-        cards.forEach((card, index) => {
+        function animateGroup(cards) {
+            cards.forEach((card, index) => {
     
-            setTimeout(() => {
+                setTimeout(() => {
+                    card.style.transition = "all 0.6s ease";
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, index * 120);
     
-                card.style.transition = "all 0.6s ease";
-                card.style.opacity = "1";
-                card.style.transform = "translateY(0)";
+            });
+        }
     
-            }, index * 120); // <-- THIS restores waterfall
-    
-        });
+        animateGroup(recentCards);
+        animateGroup(upcomingCards);
     }
 
 });
