@@ -255,11 +255,36 @@
             position: absolute;
             left: 0;
             top: 0;
-            bottom: 0;
-            width: 6px;
-            border-radius: 12px 0 0 12px;
+            height: 100%;
+            width: 8px;
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
         }
 
+        .top1 {
+            background: linear-gradient(
+                to right,
+                rgba(255,215,0,0.18),
+                rgba(255,215,0,0.05)
+            );
+        }
+        
+        .top2 {
+            background: linear-gradient(
+                to right,
+                rgba(192,192,192,0.18),
+                rgba(192,192,192,0.05)
+            );
+        }
+        
+        .top3 {
+            background: linear-gradient(
+                to right,
+                rgba(205,127,50,0.18),
+                rgba(205,127,50,0.05)
+            );
+        }
+        
         .top1::before { background: gold; }
         .top2::before { background: silver; }
         .top3::before { background: #cd7f32; }
