@@ -550,10 +550,15 @@ async function loadDriveImages() {
     const res = await fetch(url);
     const data = await res.json();
 
-    console.log("Drive response:", data); // IMPORTANT DEBUG
-
     return (data.files || [])
-        .filter(f => f.mimeType && f.mimeType.startsWith("image/"))
+        .filter(f => f.mimeType?.startsWith("image/"))
+        .sort((a, b) =>
+            a.name.localeCompare(
+                b.name,
+                undefined,
+                { numeric: true }
+            )
+        )
         .map(f => `https://lh3.googleusercontent.com/d/${f.id}=w2000`);
 }
 
