@@ -326,6 +326,24 @@
             background: #ffd5d5;
         }
 
+        .announcement {
+            margin: 0 0 20px 0;
+            padding: 14px 20px;
+        
+            background: rgba(255, 193, 7, 0.15);
+            backdrop-filter: blur(6px);
+        
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 12px;
+        
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 500;
+        
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
         /* ANIMATION */
         .row,
         .zone-title {
@@ -453,6 +471,9 @@
     <!-- MAIN -->
     <div class="container">
         <h1>BAC Padel Tournament Standings</h1>
+        <div class="announcement">
+            ⏸️ Due to company commitments, the tournament is currently on a short break. Matches are scheduled to resume on <strong>Thursday the 25th of June</strong>.
+        </div>
         <div id="main" class="leaderboard"></div>
         <div id="elim-zone" class="leaderboard"></div>
     </div>
