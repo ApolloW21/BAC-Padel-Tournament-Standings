@@ -659,7 +659,28 @@ fetch(matchesUrl)
     const body = rows.slice(1);
 
     const container = document.getElementById("matches");
-
+    
+    /* ---------------- SORT RECENT MATCHES ---------------- */
+    
+    // 1. Sort by date (newest first)
+    body.sort((a, b) => new Date(b[4]) - new Date(a[4]));
+    
+    // 2. Find the "Not Played" row
+    const notPlayedIndex = body.findIndex(row => row[4] === "Not Played");
+    
+    if (notPlayedIndex !== -1) {
+    
+        // remove it
+        const notPlayedRow = body.splice(notPlayedIndex, 1)[0];
+    
+        // insert it 9th from bottom
+        const insertAt = Math.max(0, body.length - 8);
+    
+        body.splice(insertAt, 0, notPlayedRow);
+    }
+    
+    /* ---------------- RENDER CARDS ---------------- */
+    
     body.forEach(row => {
 
         const card = document.createElement("div");
