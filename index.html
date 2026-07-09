@@ -969,7 +969,7 @@ fetch(csvUrl, { cache: "no-store" })
     
     const stage2Title = document.createElement("div");
     stage2Title.className = "zone-title";
-    stage2Title.textContent = "🔻 Stage 2 Elimination Zone 🔻";
+    stage2Title.innerHTML = "🔻&nbsp;&nbsp;Stage 2 Elimination Zone&nbsp;&nbsp;🔻";
     elimZone.appendChild(stage2Title);
     
     stage2Rows.forEach(r => {
@@ -981,7 +981,7 @@ fetch(csvUrl, { cache: "no-store" })
     
     const stage1Title = document.createElement("div");
     stage1Title.className = "zone-title stage1-title";
-    stage1Title.innerHTML = "✖&nbsp;&nbsp;Eliminated in Stage 1&nbsp;&nbsp;✖";
+    stage1Title.innerHTML = "✖&nbsp;&nbsp;&nbsp;Eliminated in Stage 1&nbsp;&nbsp;&nbsp;✖";
     /*stage1Title.textContent = "✖  Eliminated in Stage 1  ✖";*/
     elimZone.appendChild(stage1Title);
     
