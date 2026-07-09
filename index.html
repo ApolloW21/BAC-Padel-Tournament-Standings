@@ -249,7 +249,7 @@
 
         .wd-note {
             text-align: left;
-            color: #111827;
+            color: #f4f4f4;
             font-size: 16px;
             margin-top: 4px;
         }
@@ -938,7 +938,7 @@ fetch(csvUrl, { cache: "no-store" })
         // Add WD marker for Ethan without changing the grid layout
         if (row[1] === "Ethan") {
             const wdLabel = document.createElement("div");
-            wdLabel.textContent = "WD*";
+            wdLabel.textContent = "WD";
             wdLabel.className = "wd-label";
             rowDiv.appendChild(wdLabel);
         }
@@ -1025,7 +1025,7 @@ fetch(csvUrl, { cache: "no-store" })
     });
 
     const wdNote = document.createElement("div");
-    wdNote.textContent = "*WD = Withdrawn";
+    wdNote.textContent = "WD = Withdrawn";
     wdNote.className = "wd-note";
     elimZone.appendChild(wdNote);
 
