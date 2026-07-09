@@ -239,21 +239,6 @@
             position: relative;
         }
 
-        .wd-label {
-            position: absolute;
-            left: 19px;
-            color: #6b7280;
-            font-size: 16px;
-            font-weight: normal;
-        }
-
-        .wd-note {
-            text-align: left;
-            color: #f4f4f4;
-            font-size: 16px;
-            margin-top: 4px;
-        }
-
         .header {
             background: #111827;
             color: white;
@@ -934,20 +919,18 @@ fetch(csvUrl, { cache: "no-store" })
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
-        
-        // Add WD marker for Ethan without changing the grid layout
-        if (row[1] === "Ethan") {
-            const wdLabel = document.createElement("div");
-            wdLabel.textContent = "WD";
-            wdLabel.className = "wd-label";
-            rowDiv.appendChild(wdLabel);
-        }
 
         if (rank === 1) rowDiv.classList.add("top1");
         if (rank === 2) rowDiv.classList.add("top2");
         if (rank === 3) rowDiv.classList.add("top3");
 
-        const displayRow = [rankLabel, ...row.slice(1)];
+        let displayName = row[1];
+        
+        if (displayName === "Ethan") {
+            displayName += " (Withdrawn)";
+        }
+        
+        const displayRow = [rankLabel, displayName, ...row.slice(2)];
 
         displayRow.forEach((cell, i) => {
 
@@ -1023,11 +1006,6 @@ fetch(csvUrl, { cache: "no-store" })
         r.classList.add("stage1-elim");
         elimZone.appendChild(r);
     });
-
-    const wdNote = document.createElement("div");
-    wdNote.textContent = "WD = Withdrawn";
-    wdNote.className = "wd-note";
-    elimZone.appendChild(wdNote);
 
     animateWaterfall();
 
