@@ -239,21 +239,6 @@
             position: relative;
         }
 
-        .withdrawn::before {
-            content: "WD*";
-            position: absolute;
-            left: -45px;
-            font-weight: bold;
-            color: #6b7280;
-        }
-
-        .wd-note {
-            text-align: center;
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: -4px;
-        }
-
         .header {
             background: #111827;
             color: white;
@@ -936,10 +921,6 @@ fetch(csvUrl, { cache: "no-store" })
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
-        
-        if (row[1] === "Ethan") {
-            rowDiv.classList.add("withdrawn");
-        }
 
         if (rank === 1) rowDiv.classList.add("top1");
         if (rank === 2) rowDiv.classList.add("top2");
@@ -1021,11 +1002,6 @@ fetch(csvUrl, { cache: "no-store" })
         r.classList.add("stage1-elim");
         elimZone.appendChild(r);
     });
-
-    const wdNote = document.createElement("div");
-    wdNote.className = "wd-note";
-    wdNote.textContent = "*WD = Withdrawn";
-    elimZone.appendChild(wdNote);
 
     animateWaterfall();
 
