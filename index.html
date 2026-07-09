@@ -239,6 +239,14 @@
             position: relative;
         }
 
+        .wd-label {
+            position: absolute;
+            left: -35px;
+            color: #111827;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
         .header {
             background: #111827;
             color: white;
@@ -919,6 +927,14 @@ fetch(csvUrl, { cache: "no-store" })
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
+        
+        // Add WD marker for Ethan without changing the grid layout
+        if (row[1] === "Ethan") {
+            const wdLabel = document.createElement("div");
+            wdLabel.textContent = "WD*";
+            wdLabel.className = "wd-label";
+            rowDiv.appendChild(wdLabel);
+        }
 
         if (rank === 1) rowDiv.classList.add("top1");
         if (rank === 2) rowDiv.classList.add("top2");
