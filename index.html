@@ -321,6 +321,17 @@
             color: #991b1b;
         }
 
+        .stage1-title {
+            background: #e5e7eb;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .stage1-elim {
+            background: #f3f4f6;
+            opacity: 0.85;
+        }
+        
         .elim {
             opacity: 0.85;
             background: #ffd5d5;
@@ -930,20 +941,37 @@ fetch(csvUrl, { cache: "no-store" })
 
     }
 
-    const elimCount = 3;
-
-    const mainRows = rendered.slice(0, -elimCount);
-    const elimRows = rendered.slice(-elimCount);
-
+    const stage1Count = 3;      // already eliminated
+    const stage2Count = 2;      // currently in danger
+    
+    const mainRows = rendered.slice(0, -(stage1Count + stage2Count));
+    const stage2Rows = rendered.slice(-(stage1Count + stage2Count), -stage1Count);
+    const stage1Rows = rendered.slice(-stage1Count);
+    
+    // Main standings
     mainRows.forEach(r => main.appendChild(r));
-
-    const zoneTitle = document.createElement("div");
-    zoneTitle.className = "zone-title";
-    zoneTitle.textContent = "🔻 Stage 1 Elimination Zone 🔻";
-    elimZone.appendChild(zoneTitle);
-
-    elimRows.forEach(r => {
+    
+    // ---------------- Stage 2 ----------------
+    
+    const stage2Title = document.createElement("div");
+    stage2Title.className = "zone-title";
+    stage2Title.textContent = "🔻 Stage 2 Elimination Zone 🔻";
+    elimZone.appendChild(stage2Title);
+    
+    stage2Rows.forEach(r => {
         r.classList.add("elim");
+        elimZone.appendChild(r);
+    });
+    
+    // ---------------- Stage 1 ----------------
+    
+    const stage1Title = document.createElement("div");
+    stage1Title.className = "zone-title stage1-title";
+    stage1Title.textContent = "☒ Eliminated in Stage 1";
+    elimZone.appendChild(stage1Title);
+    
+    stage1Rows.forEach(r => {
+        r.classList.add("stage1-elim");
         elimZone.appendChild(r);
     });
 
