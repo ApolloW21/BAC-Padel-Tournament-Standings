@@ -247,6 +247,13 @@
             font-weight: normal;
         }
 
+        .wd-note {
+            text-align: left;
+            color: #111827;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
         .header {
             background: #111827;
             color: white;
@@ -1016,6 +1023,11 @@ fetch(csvUrl, { cache: "no-store" })
         r.classList.add("stage1-elim");
         elimZone.appendChild(r);
     });
+
+    const wdNote = document.createElement("div");
+    wdNote.textContent = "*WD = Withdrawn";
+    wdNote.className = "wd-note";
+    elimZone.appendChild(wdNote);
 
     animateWaterfall();
 
