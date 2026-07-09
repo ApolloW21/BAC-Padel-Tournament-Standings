@@ -864,6 +864,19 @@ fetch(csvUrl, { cache: "no-store" })
         return Number(b[4]) - Number(a[4]);
     });
 
+    // ----- Force Ethan into 11th place -----
+    
+    const ethanIndex = bodyRows.findIndex(row => row[1] === "Ethan");
+    
+    if (ethanIndex !== -1) {
+    
+        // Remove Ethan from wherever he currently is
+        const ethanRow = bodyRows.splice(ethanIndex, 1)[0];
+    
+        // Insert him in 11th place (index 10)
+        bodyRows.splice(10, 0, ethanRow);
+    }
+
     const main = document.getElementById("main");
     const elimZone = document.getElementById("elim-zone");
 
