@@ -350,6 +350,12 @@
             opacity: 0.85;
             background: #ffd5d5;
         }
+
+        .wd-label {
+            font-size: inherit;
+            color: inherit;
+            margin-right: 8px;
+        }
         
         /* PAUSE BANNER STYLE */
         /*
@@ -866,15 +872,17 @@ fetch(csvUrl, { cache: "no-store" })
 
     // ----- Force Ethan into 11th place -----
     
+    let ethanRowIndex = -1;
+    
     const ethanIndex = bodyRows.findIndex(row => row[1] === "Ethan");
     
     if (ethanIndex !== -1) {
     
-        // Remove Ethan from wherever he currently is
         const ethanRow = bodyRows.splice(ethanIndex, 1)[0];
     
-        // Insert him in 11th place (index 10)
         bodyRows.splice(10, 0, ethanRow);
+    
+        ethanRowIndex = 10;
     }
 
     const main = document.getElementById("main");
@@ -921,6 +929,10 @@ fetch(csvUrl, { cache: "no-store" })
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
+        
+        if (i === ethanRowIndex) {
+            rowDiv.classList.add("withdrawn-row");
+        }
 
         if (rank === 1) rowDiv.classList.add("top1");
         if (rank === 2) rowDiv.classList.add("top2");
@@ -960,7 +972,10 @@ fetch(csvUrl, { cache: "no-store" })
             else {
                 div.textContent = cell;
             }
-
+            
+            if (i === 0 && rowDiv.classList.contains("withdrawn-row")) {
+                div.innerHTML = `<span class="wd-label">WD*</span> ${cell}`;
+            }
             rowDiv.appendChild(div);
         });
 
