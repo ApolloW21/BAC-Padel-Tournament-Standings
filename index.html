@@ -971,27 +971,13 @@ fetch(csvUrl, { cache: "no-store" })
 
     }
 
-    const stage1Count = 3;      // already eliminated
-    const stage2Count = 2;      // currently in danger
+    const stage1Count = 5;      // eliminated players
     
-    const mainRows = rendered.slice(0, -(stage1Count + stage2Count));
-    const stage2Rows = rendered.slice(-(stage1Count + stage2Count), -stage1Count);
+    const mainRows = rendered.slice(0, -stage1Count);
     const stage1Rows = rendered.slice(-stage1Count);
     
     // Main standings
     mainRows.forEach(r => main.appendChild(r));
-    
-    // ---------------- Stage 2 ----------------
-    
-    const stage2Title = document.createElement("div");
-    stage2Title.className = "zone-title";
-    stage2Title.innerHTML = "🔻&nbsp;&nbsp;Stage 2 Elimination Zone&nbsp;&nbsp;🔻";
-    elimZone.appendChild(stage2Title);
-    
-    stage2Rows.forEach(r => {
-        r.classList.add("elim");
-        elimZone.appendChild(r);
-    });
     
     // ---------------- Stage 1 ----------------
     
