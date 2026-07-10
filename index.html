@@ -863,16 +863,37 @@ fetch(csvUrl, { cache: "no-store" })
         return Number(b[4]) - Number(a[4]);
     });
 
-    // ----- Force Ethan into 11th place -----
+    // ----- Force withdrawn players into fixed positions -----
     
-    const ethanIndex = bodyRows.findIndex(row => row[1] === "Ethan");
+    const withdrawnPlayers = [
+        { name: "Ethan", position: 9 },
+        { name: "Zack",  position: 10 },
+        { name: "Seyed", position: 11 }
+    ];
     
-    if (ethanIndex !== -1) {
+    // Remove them from wherever they currently are
+    const withdrawnRows = {};
     
-        const ethanRow = bodyRows.splice(ethanIndex, 1)[0];
+    withdrawnPlayers.forEach(player => {
     
-        bodyRows.splice(10, 0, ethanRow);
-    }
+        const index = bodyRows.findIndex(row => row[1] === player.name);
+    
+        if (index !== -1) {
+            withdrawnRows[player.name] = bodyRows.splice(index, 1)[0];
+        }
+    
+    });
+    
+    // Insert them back in the required positions
+    withdrawnPlayers.forEach(player => {
+    
+        const row = withdrawnRows[player.name];
+    
+        if (row) {
+            bodyRows.splice(player.position - 1, 0, row);
+        }
+    
+    });
 
     const main = document.getElementById("main");
     const elimZone = document.getElementById("elim-zone");
@@ -925,7 +946,7 @@ fetch(csvUrl, { cache: "no-store" })
 
         let displayName = row[1];
         
-        if (displayName === "Ethan") {
+        if (["Ethan", "Zack", "Seyed"].includes(displayName)) {
             displayName += " (Withdrawn)";
         }
         
