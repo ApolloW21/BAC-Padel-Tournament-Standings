@@ -231,12 +231,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 60px;
+        
+            gap: 0;
         
             margin: 30px 0 40px;
-
-            position: relative;
-            z-index: 2;
         }
         
         .knockout-left {
@@ -261,6 +259,7 @@
 
         /* ---------------- BRACKET CONNECTOR LINES ---------------- */
         
+        /* Vertical joining line between semi-finals */
         .knockout-left::after {
             content: "";
             position: absolute;
@@ -270,25 +269,25 @@
             height: 50%;
             width: 30px;
         
-            border-right: 2px solid white;
-            border-top: 2px solid white;
-            border-bottom: 2px solid white;
+            border-right: 2px solid rgba(255,255,255,0.8);
+            border-top: 2px solid rgba(255,255,255,0.8);
+            border-bottom: 2px solid rgba(255,255,255,0.8);
         }
         
         
-        /* Horizontal line into final */
+        /* Horizontal line from bracket to final */
         .knockout-right::before {
             content: "";
         
             position: absolute;
         
-            left: -30px;
+            left: -60px;
             top: 50%;
         
-            width: 30px;
+            width: 60px;
             height: 2px;
         
-            background: white;
+            background: rgba(255,255,255,0.8);
         }
 
         /* Limit the width of each bracket card */
