@@ -257,33 +257,63 @@
             position: relative;
         }
 
+        /* Horizontal lines leaving each semi-final */
         .knockout-left::after {
             content: "";
             position: absolute;
+            right: -60px;
+            top: 50%;
+            width: 60px;
+            height: 2px;
+            background: #9ca3af;
+        }
         
-            right: -50%;
-            top: 25%;
-            height: 50%;
-            width: 50%;
+        /* Individual semi final connectors */
+        #semi1,
+        #semi2 {
+            position: relative;
+        }
         
-            border-right: 2px solid rgba(255,255,255,0.8);
-            border-top: 2px solid rgba(255,255,255,0.8);
-            border-bottom: 2px solid rgba(255,255,255,0.8);
+        #semi1::after,
+        #semi2::after {
+            content: "";
+            position: absolute;
+            right: -60px;
+            width: 60px;
+            height: 2px;
+            background: #9ca3af;
+        }
+        
+        #semi1::after {
+            top: 50%;
+        }
+        
+        #semi2::after {
+            top: 50%;
         }
         
         
+        /* Vertical joining line between semi-finals */
+        .knockout-left::before {
+            content: "";
+            position: absolute;
+            right: -60px;
+            top: 25%;
+            height: 50%;
+            width: 2px;
+            background: #9ca3af;
+        }
+        
+        
+        /* Final incoming connector */
         .knockout-right::before {
             content: "";
-        
             position: absolute;
-        
-            left: -50%;
+            left: -60px;
             top: 50%;
-        
-            width: 50%;
+            width: 60px;
             height: 2px;
-        
-            background: rgba(255,255,255,0.8);
+            background: #9ca3af;
         }
 
         /* Limit the width of each bracket card */
