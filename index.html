@@ -226,6 +226,28 @@
             margin-bottom: 12px;
         }
 
+        .knockout-layout{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:40px;
+        
+            width:100%;
+            margin:35px 0 45px;
+            align-items:center;
+        }
+        
+        .knockout-left{
+            display:flex;
+            flex-direction:column;
+            gap:24px;
+        }
+        
+        .knockout-right{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+    
         .row {
             display: grid;
             grid-template-columns: 0.78fr 1.22fr 1fr 1.22fr 0.78fr;
@@ -472,7 +494,15 @@
             .upcoming-card {
                 /*font-size: 12px;*/
             }
-        
+
+            .knockout-layout{
+                grid-template-columns:1fr;
+            }
+            
+            .knockout-right{
+                justify-content:stretch;
+            }
+            
             body {
                 padding: 20px;
             }
@@ -504,6 +534,18 @@
             ⏸️ Due to company commitments, the tournament is currently on a short break. Matches are scheduled to resume on <strong>Thursday the 25th of June</strong>.
         </div>
         -->
+        <div class="knockout-layout">
+        
+            <div class="knockout-left">
+                <div id="semi1"></div>
+                <div id="semi2"></div>
+            </div>
+        
+            <div class="knockout-right">
+                <div id="final"></div>
+            </div>
+        
+        </div>
         <div id="main" class="leaderboard"></div>
         <div id="elim-zone" class="leaderboard"></div>
     </div>
@@ -526,6 +568,9 @@ const matchesUrl =
 
 const upcomingUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=1642789849&single=true&output=csv";
+
+const knockoutUrl =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=2136872796&single=true&output=csv";
     
 const csvUrl = baseUrl + "&_=" + Date.now();
 
@@ -764,6 +809,77 @@ fetch(matchesUrl)
 
 });
 
+/* ---------------- KNOCKOUT STAGE ---------------- */
+
+fetch(knockoutUrl)
+.then(r => r.text())
+.then(data => {
+
+    const rows = data.trim().split("\n").map(r => r.split(","));
+    const body = rows.slice(3);   // Row 4 onwards
+
+    const semi1 = document.getElementById("semi1");
+    const semi2 = document.getElementById("semi2");
+    const final = document.getElementById("final");
+
+    body.forEach(row => {
+
+        const card = document.createElement("div");
+        card.className = "upcoming-card";
+
+        const type = row[1];
+        const team1a = row[2];
+        const team1b = row[3];
+        const team2a = row[5];
+        const team2b = row[6];
+
+        const date = row[7]?.trim();
+        const start = row[8]?.trim();
+        const end = row[9]?.trim();
+
+        let timeText;
+
+        if (!date && !start && !end) {
+            timeText = "TBD";
+        }
+        else if (!date && start && !end) {
+            timeText = `TBD • ${start}`;
+        }
+        else if (!date && !start && end) {
+            timeText = `TBD • Ends ${end}`;
+        }
+        else {
+            timeText = `${date || "TBD"} • ${start || ""}${end ? " - " + end : ""}`;
+        }
+
+        card.innerHTML = `
+            <div class="upcoming-week">${type}</div>
+
+            <div class="upcoming-teams">
+                ${team1a} & ${team1b}<br>
+                vs<br>
+                ${team2a} & ${team2b}
+            </div>
+
+            <div class="upcoming-meta">
+                ${timeText}
+            </div>
+        `;
+
+        if (type === "Semi Final 1") {
+            semi1.appendChild(card);
+        }
+        else if (type === "Semi Final 2") {
+            semi2.appendChild(card);
+        }
+        else {
+            final.appendChild(card);
+        }
+
+    });
+
+});
+    
 /* ---------------- UPCOMING MATCHES SIDEBAR ---------------- */
 function renderSet(value) {
 
