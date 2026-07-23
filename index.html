@@ -237,14 +237,28 @@
         }
         
         .knockout-left {
-            width: 42%;
+            flex: 1;
+        
             display: flex;
             flex-direction: column;
             gap: 20px;
+        
+            align-items: center;
         }
         
         .knockout-right {
-            width: 42%;
+            flex: 1;
+        
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Limit the width of each bracket card */
+        #semi1 .upcoming-card,
+        #semi2 .upcoming-card,
+        #final .upcoming-card {
+            width: 100%;
+            max-width: 420px;   /* Change this to whatever width you prefer */
         }
     
         .row {
