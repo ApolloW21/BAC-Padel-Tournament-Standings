@@ -233,6 +233,67 @@
             margin-bottom: 30px;
         }
 
+        .bracket-section{
+            margin-top:40px;
+        }
+        
+        .bracket-section h1{
+            text-align:center;
+            color:white;
+            margin-bottom:30px;
+        }
+        
+        .bracket{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:50px;
+        }
+        
+        .semi-column{
+            display:flex;
+            flex-direction:column;
+            gap:120px;
+            width:300px;
+        }
+        
+        .final-column{
+            width:300px;
+        }
+        
+        .connector{
+            width:80px;
+            height:340px;
+            position:relative;
+        }
+        
+        .connector .top{
+            position:absolute;
+            top:70px;
+            left:0;
+            width:40px;
+            border-top:3px solid rgba(255,255,255,.8);
+        }
+        
+        .connector .bottom{
+            position:absolute;
+            bottom:70px;
+            left:0;
+            width:40px;
+            border-top:3px solid rgba(255,255,255,.8);
+        }
+        
+        .connector .middle{
+            position:absolute;
+            top:70px;
+            left:40px;
+            width:0;
+            height:200px;
+            border-left:3px solid rgba(255,255,255,.8);
+            border-top:3px solid rgba(255,255,255,.8);
+            width:40px;
+        }
+
         .row {
             display: grid;
             grid-template-columns: 0.78fr 1.22fr 1fr 1.22fr 0.78fr;
@@ -522,6 +583,25 @@
         <div id="upcoming"></div>
     </div>
 
+    <!-- KNOCKOUT -->
+    <div class="bracket-section">
+        <h1>Stage 3 Finals</h1>
+    
+        <div class="bracket">
+    
+            <div class="semi-column" id="semis"></div>
+    
+            <div class="connector">
+                <div class="line top"></div>
+                <div class="line middle"></div>
+                <div class="line bottom"></div>
+            </div>
+    
+            <div class="final-column" id="final"></div>
+    
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -535,7 +615,7 @@ const matchesUrl =
 const upcomingUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=1642789849&single=true&output=csv";
 
-const knockoutUrl =
+const finalsUrl =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vR8WpN2tZ7Gjb6UySW6DcER-MXEFOPLshLXYkbK0p9phKyGDRWnxivJePyo5RVIvTRehLuIoY7QP6BR/pub?gid=2136872796&single=true&output=csv";
     
 const csvUrl = baseUrl + "&_=" + Date.now();
@@ -774,67 +854,6 @@ fetch(matchesUrl)
     });
 
 });
-
-/* ---------------- KNOCKOUT STAGE ---------------- */
-
-fetch(knockoutUrl)
-.then(r => r.text())
-.then(data => {
-
-    const rows = data.trim().split("\n").map(r => r.split(","));
-    const body = rows.slice(3);   // Row 4 onwards
-
-    const container = document.getElementById("knockout");
-
-    body.forEach(row => {
-
-        const card = document.createElement("div");
-        card.className = "upcoming-card";
-
-        const type = row[1];
-        const team1a = row[2];
-        const team1b = row[3];
-        const team2a = row[5];
-        const team2b = row[6];
-
-        const date = row[7]?.trim();
-        const start = row[8]?.trim();
-        const end = row[9]?.trim();
-
-        let timeText;
-
-        if (!date && !start && !end) {
-            timeText = "TBD";
-        }
-        else if (!date && start && !end) {
-            timeText = `TBD • ${start}`;
-        }
-        else if (!date && !start && end) {
-            timeText = `TBD • Ends ${end}`;
-        }
-        else {
-            timeText = `${date || "TBD"} • ${start || ""}${end ? " - " + end : ""}`;
-        }
-
-        card.innerHTML = `
-            <div class="upcoming-week">${type}</div>
-
-            <div class="upcoming-teams">
-                ${team1a} & ${team1b}<br>
-                vs<br>
-                ${team2a} & ${team2b}
-            </div>
-
-            <div class="upcoming-meta">
-                ${timeText}
-            </div>
-        `;
-
-        container.appendChild(card);
-
-    });
-
-});
     
 /* ---------------- UPCOMING MATCHES SIDEBAR ---------------- */
 function renderSet(value) {
@@ -914,6 +933,53 @@ fetch(upcomingUrl)
         `;
 
         container.appendChild(card);
+
+    });
+
+});
+
+/* ---------------- FINALS BRACKET ---------------- */
+
+fetch(finalsUrl)
+.then(r => r.text())
+.then(data => {
+
+    const rows = data.trim().split("\n").map(r => r.split(","));
+    const body = rows.slice(3);   // rows 4-6
+
+    const semis = document.getElementById("semis");
+    const final = document.getElementById("final");
+
+    body.forEach(row => {
+
+        const card = document.createElement("div");
+        card.className = "upcoming-card";
+
+        const date = row[7]?.trim();
+        const start = row[8]?.trim();
+        const end = row[9]?.trim();
+
+        let timeText =
+            `${date || "TBD"} • ${start || ""}${end ? " - " + end : ""}`;
+
+        card.innerHTML = `
+            <div class="upcoming-week">${row[1]}</div>
+
+            <div class="upcoming-teams">
+                ${row[2]} & ${row[3]}<br>
+                vs<br>
+                ${row[5]} & ${row[6]}
+            </div>
+
+            <div class="upcoming-meta">
+                ${timeText}
+            </div>
+        `;
+
+        if (row[1].includes("Semi"))
+            semis.appendChild(card);
+        else
+            final.appendChild(card);
 
     });
 
