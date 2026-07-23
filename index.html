@@ -231,10 +231,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        
-            gap: 0;
+            gap: 60px;
         
             margin: 30px 0 40px;
+
+            position: relative;
+            z-index: 2;
         }
         
         .knockout-left {
@@ -257,63 +259,36 @@
             position: relative;
         }
 
-        /* Horizontal lines leaving each semi-final */
+        /* ---------------- BRACKET CONNECTOR LINES ---------------- */
+        
         .knockout-left::after {
             content: "";
             position: absolute;
-            right: -60px;
-            top: 50%;
-            width: 60px;
-            height: 2px;
-            background: #9ca3af;
-        }
         
-        /* Individual semi final connectors */
-        #semi1,
-        #semi2 {
-            position: relative;
-        }
-        
-        #semi1::after,
-        #semi2::after {
-            content: "";
-            position: absolute;
-            right: -60px;
-            width: 60px;
-            height: 2px;
-            background: #9ca3af;
-        }
-        
-        #semi1::after {
-            top: 50%;
-        }
-        
-        #semi2::after {
-            top: 50%;
-        }
-        
-        
-        /* Vertical joining line between semi-finals */
-        .knockout-left::before {
-            content: "";
-            position: absolute;
-            right: -60px;
+            right: -30px;
             top: 25%;
             height: 50%;
-            width: 2px;
-            background: #9ca3af;
+            width: 30px;
+        
+            border-right: 2px solid white;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
         }
         
         
-        /* Final incoming connector */
+        /* Horizontal line into final */
         .knockout-right::before {
             content: "";
+        
             position: absolute;
-            left: -60px;
+        
+            left: -30px;
             top: 50%;
-            width: 60px;
+        
+            width: 30px;
             height: 2px;
-            background: #9ca3af;
+        
+            background: white;
         }
 
         /* Limit the width of each bracket card */
